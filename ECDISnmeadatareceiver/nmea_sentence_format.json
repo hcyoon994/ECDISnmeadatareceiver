@@ -1,0 +1,92 @@
+{
+  "GLL": [
+    {
+      "no": 1,
+      "field": "Latitude"
+    },
+    {
+      "no": 2,
+      "field": "N/S Indicator"
+    },
+    {
+      "no": 3,
+      "field": "Longitude"
+    },
+    {
+      "no": 4,
+      "field": "E/W Indicator"
+    },
+    {
+      "no": 5,
+      "field": "UTC Time"
+    },
+    {
+      "no": 6,
+      "field": "Status (A = data valid, V = data invalid)"
+    },
+    {
+      "no": 7,
+      "field": "Mode indicator"
+    }
+  ],
+  "VTG": [
+    {
+      "no": 1,
+      "field": "Track, Degrees"
+    },
+    {
+      "no": 2,
+      "field": "T = True"
+    },
+    {
+      "no": 3,
+      "field": "Track, Degrees"
+    },
+    {
+      "no": 4,
+      "field": "M = Magnetic"
+    },
+    {
+      "no": 5,
+      "field": "Speed Knots"
+    },
+    {
+      "no": 6,
+      "field": "N = Knots"
+    },
+    {
+      "no": 7,
+      "field": "Speed Kilometers Per Hour"
+    },
+    {
+      "no": 8,
+      "field": "K = Kilometers Per Hour"
+    }
+  ],
+  "ZDA": [
+    {
+      "no": 1,
+      "field": "UTC"
+    },
+    {
+      "no": 2,
+      "field": "Day, 01 to 31 (UTC)"
+    },
+    {
+      "no": 3,
+      "field": "Month, 01 to 12 (UTC)"
+    },
+    {
+      "no": 4,
+      "field": "Year (UTC)"
+    },
+    {
+      "no": 5,
+      "field": "Local zone hours"
+    },
+    {
+      "no": 6,
+      "field": "Local zone minutes"
+    }
+  ]
+}
