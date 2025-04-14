@@ -326,7 +326,7 @@ namespace ECDISnmeadatareceiver
         }
         #endregion
 
-        #region Nmea Sentence Mapping Class
+        #region Nmea Sentence Format Loader Class
         public class NmeaSentenceField
         {
             public int no { get; set; }
