@@ -23,11 +23,14 @@ namespace ECDISnmeadatareceiver
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            UdpMulticastClient();
-            //UdpUnicastClient();
+            int listenPort = 60016;
+            string ip = "239.192.0.21";
+
+            UdpMulticastClient(listenPort, ip);
+            UdpUnicastClient(60000, "127.0.0.1"); // Unicast 방식으로는 ECDIS 데이터를 받아올 수 없음
         }
 
-        public void UdpMulticastClient(int listenPort = 60016, string ip = "239.192.0.21")
+        public void UdpMulticastClient(int listenPort, string ip)
         {
 
             var loader = new NmeaSentenceFormatLoader();
@@ -35,18 +38,18 @@ namespace ECDISnmeadatareceiver
 
             if (sentenceMap == null)
             {
-                listBox1.Items.Add($"Cannot Load 'nmea_sentence_format.json' file");
+                AddLog($"Cannot Load 'nmea_sentence_format.json' file");
                 // 정지 시 재실행
 
             }
-            listBox1.Items.Add($"NmeaSentence Format Map Load");
+            AddLog($"NmeaSentence Format Map Load");
 
             IPAddress connectIp = IPAddress.Parse(ip); // 연결 IP 주소
             //IPAddress connectIp = IPAddress.Any; // 연결 IP 주소
             
-            listBox1.Items.Add($"UDP 수신 대기 중... {connectIp} : {listenPort}");
+            AddLog($"UDP Multicast 수신 대기 중... {connectIp} : {listenPort}");
 
-
+            // Multicast Join
             IPEndPoint localEP = new IPEndPoint(IPAddress.Any, listenPort);
             UdpClient udp = new UdpClient();
             udp.ExclusiveAddressUse = false;
@@ -63,7 +66,7 @@ namespace ECDISnmeadatareceiver
                 {
                     //NIC 하나일때
                     udp.JoinMulticastGroup(multicastIP);
-                    listBox1.Items.Add($"JoinMulticastGroup 완료");
+                    AddLog($"JoinMulticastGroup 완료");
                 }
                 else
                 {
@@ -72,11 +75,13 @@ namespace ECDISnmeadatareceiver
                     try
                     {
                         udp.JoinMulticastGroup(multicastIP, IPAddress.Parse(ip));
+                        AddLog($"JoinMulticastGroup 완료");
                     }
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine($"{connectIp}:{listenPort} connectIp={connectIp}" + ex.Message);
                         udp.JoinMulticastGroup(multicastIP);
+                        AddLog($"JoinMulticastGroup 완료");
                     }
                 }
             }
@@ -94,14 +99,19 @@ namespace ECDISnmeadatareceiver
                         //    // UI 스레드에서 컨트롤 접근은 Invoke 필요 
                         //    Invoke(new Action(() =>
                         //    {
-                        //        listBox1.Items.Add($"받은 데이터: {receivedData}");
+                        //        AddLog($"받은 데이터: {receivedData}");
                         //        listBox1.SelectedIndex = listBox1.Items.Count - 1;
                         //    }));
 
                         byte[] receivedBytes = udp.Receive(ref localEP);
                         string receivedData = Encoding.ASCII.GetString(receivedBytes);
 
-                        //listBox1.Items.Add($"받은 데이터 : {receivedData}");
+                        //AddLog($"받은 데이터 : {receivedData}");
+                        Invoke(new Action(() =>
+                        {
+                            AddLog($"-----Multicast Begin-----");
+                            AddLog($"받은 데이터 : {receivedData}");
+                        }));
 
                         // 받은 nmea 데이터를 처리하는 function 생성
                         NmeaResult nmeaData = ParseNmeaSentence(receivedData);
@@ -110,9 +120,8 @@ namespace ECDISnmeadatareceiver
                         string sentenceId = Convert.ToString(nmeaData.Fields[0]).Substring(2, 3);
                         Invoke(new Action(() =>
                         {
-                            listBox1.Items.Add($"받은 데이터 : {receivedData}");
-                            listBox1.Items.Add($"TalkerID : {talkerId}");
-                            listBox1.Items.Add($"SentenceID : {sentenceId}");
+                            AddLog($"TalkerID : {talkerId}");
+                            AddLog($"SentenceID : {sentenceId}");
                         }));
 
                         // field와 값을 매칭
@@ -123,7 +132,7 @@ namespace ECDISnmeadatareceiver
                             {
                                 Invoke(new Action(() =>
                                 {
-                                    listBox1.Items.Add($"#{i + 1} - {Convert.ToString(nmeaData.Fields[i + 1])} : {fields[i].field}");
+                                    AddLog($"Data Field #{i + 1} - {fields[i].field} : {Convert.ToString(nmeaData.Fields[i + 1])}");
                                     //listBox1.SelectedIndex = listBox1.Items.Count - 1;
                                 }));
                             }
@@ -134,16 +143,24 @@ namespace ECDISnmeadatareceiver
                     {
                         Invoke(new Action(() =>
                         {
-                            listBox1.Items.Add($"오류: {ex.Message}");
-                            listBox1.Items.Add(ex.StackTrace); // 예외 스택 추적 출력
+                            AddLog($"오류: {ex.Message}");
+                            AddLog(ex.StackTrace); // 예외 스택 추적 출력
                         }));
+                    }
+                    finally
+                    {
+                        Invoke(new Action(() =>
+                        {
+                            AddLog($"-----Multicast Finish-----");
+                        }));
+
                     }
                 }
             });
 
         }
 
-        public void UdpUnicastClient(int listenPort = 60016, string ip = "239.192.0.21")
+        public void UdpUnicastClient(int listenPort, string ip)
         {
 
             var loader = new NmeaSentenceFormatLoader();
@@ -151,11 +168,11 @@ namespace ECDISnmeadatareceiver
 
             if (sentenceMap == null)
             {
-                listBox1.Items.Add($"Cannot Load 'nmea_sentence_format.json' file");
+                AddLog($"Cannot Load 'nmea_sentence_format.json' file");
                 // 정지 시 재실행
 
             }
-            listBox1.Items.Add($"NmeaSentence Format Map Load");
+            AddLog($"NmeaSentence Format Map Load");
 
             IPAddress connectIp = IPAddress.Parse(ip); // 연결 IP 주소
             //IPAddress connectIp = IPAddress.Any; // 연결 IP 주소
@@ -163,7 +180,7 @@ namespace ECDISnmeadatareceiver
             UdpClient udpClient = new UdpClient(listenPort);
             IPEndPoint remoteEP = new IPEndPoint(connectIp, listenPort);
 
-            listBox1.Items.Add($"UDP 수신 대기 중... {connectIp} : {listenPort}");
+            AddLog($"UDP Unicast 수신 대기 중... {connectIp} : {listenPort}");
 
             // Task를 사용해 백그라운드에서 실행
             Task.Run(() =>
@@ -178,25 +195,30 @@ namespace ECDISnmeadatareceiver
                         //    // UI 스레드에서 컨트롤 접근은 Invoke 필요 
                         //    Invoke(new Action(() =>
                         //    {
-                        //        listBox1.Items.Add($"받은 데이터: {receivedData}");
+                        //        AddLog($"받은 데이터: {receivedData}");
                         //        listBox1.SelectedIndex = listBox1.Items.Count - 1;
                         //    }));
 
                         byte[] receivedBytes = udpClient.Receive(ref remoteEP);
                         string receivedData = Encoding.ASCII.GetString(receivedBytes);
 
-                        //listBox1.Items.Add($"받은 데이터 : {receivedData}");
+                        //AddLog($"받은 데이터 : {receivedData}");
+                        Invoke(new Action(() =>
+                        {
+                            AddLog($"-----Unicast Begin-----");
+                            AddLog($"받은 데이터 : {receivedData}");
+                        }));
 
                         // 받은 nmea 데이터를 처리하는 function 생성
                         NmeaResult nmeaData = ParseNmeaSentence(receivedData);
 
                         string talkerId = Convert.ToString(nmeaData.Fields[0]).Substring(0, 2);
                         string sentenceId = Convert.ToString(nmeaData.Fields[0]).Substring(2, 3);
+
                         Invoke(new Action(() =>
                         {
-                            listBox1.Items.Add($"받은 데이터 : {receivedData}");
-                            listBox1.Items.Add($"TalkerID : {talkerId}");
-                            listBox1.Items.Add($"SentenceID : {sentenceId}");
+                            AddLog($"TalkerID : {talkerId}");
+                            AddLog($"SentenceID : {sentenceId}");
                         }));
 
                         // field와 값을 매칭
@@ -207,8 +229,8 @@ namespace ECDISnmeadatareceiver
                             {
                                 Invoke(new Action(() =>
                                 {
-                                    listBox1.Items.Add($"#{i + 1} - {Convert.ToString(nmeaData.Fields[i + 1])} : {fields[i].field}");
-                                    listBox1.SelectedIndex = listBox1.Items.Count - 1;
+                                    AddLog($"Data Field #{i + 1} - {fields[i].field} : {Convert.ToString(nmeaData.Fields[i + 1])}");
+                                    //listBox1.SelectedIndex = listBox1.Items.Count - 1;
                                 }));
                             }
                         }
@@ -218,9 +240,17 @@ namespace ECDISnmeadatareceiver
                     {
                         Invoke(new Action(() =>
                         {
-                            listBox1.Items.Add($"오류: {ex.Message}");
-                            listBox1.Items.Add(ex.StackTrace); // 예외 스택 추적 출력
+                            AddLog($"오류: {ex.Message}");
+                            AddLog(ex.StackTrace); // 예외 스택 추적 출력
                         }));
+                    }
+                    finally
+                    {
+                        Invoke(new Action(() =>
+                        {
+                            AddLog($"-----Unicast Finish-----");
+                        }));
+
                     }
                 }
             });
@@ -276,14 +306,14 @@ namespace ECDISnmeadatareceiver
                 {
                     Invoke(new Action(() =>
                     {
-                        listBox1.Items.Add($"체크섬 불일치");
+                        AddLog($"체크섬 불일치");
                     }));
                     return result; // 체크섬 불일치
                 }
 
                 Invoke(new Action(() =>
                 {
-                    listBox1.Items.Add($"체크섬 일치");
+                    AddLog($"체크섬 일치");
                 }));
 
                 // 5. 필드 파싱 (',' 기준)
@@ -320,5 +350,53 @@ namespace ECDISnmeadatareceiver
         }
         #endregion
 
+
+        #region logging
+        private void AddLog(string message)
+        {
+            if (listBox1.InvokeRequired)
+            {
+                listBox1.Invoke(new Action(() => AddLog(message)));
+                return;
+            }
+
+            string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string logLine = $"[{timestamp}] {message}";
+
+            // 리스트박스에 로그 추가
+            listBox1.Items.Add(logLine);
+
+            // 항목 개수가 10000 초과 시, 초과된 만큼 앞에서부터 제거
+            int maxLines = 10000;
+            while (listBox1.Items.Count > maxLines)
+            {
+                listBox1.Items.RemoveAt(0);
+            }
+
+
+            // 로그 파일 저장
+            try
+            {
+                string logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+                if (!Directory.Exists(logDir))
+                {
+                    Directory.CreateDirectory(logDir);
+                }
+
+                string logFileName = DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+                string logFilePath = Path.Combine(logDir, logFileName);
+
+                File.AppendAllText(logFilePath, logLine + Environment.NewLine);
+            }
+            catch (Exception ex)
+            {
+                // 로그 저장 실패는 UI에만 남김
+                listBox1.Items.Add($"[LogError] {ex.Message}");
+            }
+
+            // 항상 마지막 항목이 선택되게 (자동 스크롤)
+            //listBox1.TopIndex = listBox1.Items.Count - 1;
+        }
+        #endregion
     }
 }

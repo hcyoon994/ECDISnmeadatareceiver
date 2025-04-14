@@ -1,4 +1,170 @@
 {
+  "VDM": [
+    {
+      "no": 1,
+      "field": "Total number of sentences needed to transfer the message"
+    },
+    {
+      "no": 2,
+      "field": "Sentence number"
+    },
+    {
+      "no": 3,
+      "field": "Sequential message identifier"
+    },
+    {
+      "no": 4,
+      "field": "AIS Channel"
+    },
+    {
+      "no": 5,
+      "field": "Encapsulated ITU-R M.1371 radio message"
+    },
+    {
+      "no": 6,
+      "field": "Number of fill-bits"
+    }
+  ],
+  "VDO": [
+    {
+      "no": 1,
+      "field": "Total number of sentences needed to transfer the message"
+    },
+    {
+      "no": 2,
+      "field": "Sentence number"
+    },
+    {
+      "no": 3,
+      "field": "Sequential message identifier"
+    },
+    {
+      "no": 4,
+      "field": "AIS Channel"
+    },
+    {
+      "no": 5,
+      "field": "Encapsulated ITU-R M.1371 radio message"
+    },
+    {
+      "no": 6,
+      "field": "Number of fill-bits"
+    }
+  ],
+  "MWV": [
+    {
+      "no": 1,
+      "field": "Wind Angle"
+    },
+    {
+      "no": 2,
+      "field": "Reference, R = Relative, T = True"
+    },
+    {
+      "no": 3,
+      "field": "Wind Speed"
+    },
+    {
+      "no": 4,
+      "field": "Wind Speed Units, K/M/N/S"
+    },
+    {
+      "no": 5,
+      "field": "Status, A = Data Valid"
+    }
+  ],
+  "VWR": [
+    {
+      "no": 1,
+      "field": "Wind direction magnitude in degrees"
+    },
+    {
+      "no": 2,
+      "field": "Wind direction Left/Right of bow"
+    },
+    {
+      "no": 3,
+      "field": "Speed"
+    },
+    {
+      "no": 4,
+      "field": "N = Knots"
+    },
+    {
+      "no": 5,
+      "field": "Speed"
+    },
+    {
+      "no": 6,
+      "field": "M = Meters Per Second"
+    },
+    {
+      "no": 7,
+      "field": "Speed"
+    },
+    {
+      "no": 8,
+      "field": "K = Kilometers Per Hour"
+    }
+  ],
+  "GGA": [
+    {
+      "no": 1,
+      "field": "Time (UTC)"
+    },
+    {
+      "no": 2,
+      "field": "Latitude"
+    },
+    {
+      "no": 3,
+      "field": "N or S (North or South)"
+    },
+    {
+      "no": 4,
+      "field": "Longitude"
+    },
+    {
+      "no": 5,
+      "field": "E or W (East or West)"
+    },
+    {
+      "no": 6,
+      "field": "GPS Quality Indicator"
+    },
+    {
+      "no": 7,
+      "field": "Number of satellites in view"
+    },
+    {
+      "no": 8,
+      "field": "Horizontal Dilution of precision"
+    },
+    {
+      "no": 9,
+      "field": "Antenna Altitude"
+    },
+    {
+      "no": 10,
+      "field": "Units of antenna altitude"
+    },
+    {
+      "no": 11,
+      "field": "Geoidal separation"
+    },
+    {
+      "no": 12,
+      "field": "Units of geoidal separation"
+    },
+    {
+      "no": 13,
+      "field": "Age of differential GPS data"
+    },
+    {
+      "no": 14,
+      "field": "Differential reference station ID"
+    }
+  ],
   "GLL": [
     {
       "no": 1,
@@ -6,7 +172,7 @@
     },
     {
       "no": 2,
-      "field": "N/S Indicator"
+      "field": "N or S (North or South)"
     },
     {
       "no": 3,
@@ -14,25 +180,21 @@
     },
     {
       "no": 4,
-      "field": "E/W Indicator"
+      "field": "E or W (East or West)"
     },
     {
       "no": 5,
-      "field": "UTC Time"
+      "field": "Time (UTC)"
     },
     {
       "no": 6,
-      "field": "Status (A = data valid, V = data invalid)"
-    },
-    {
-      "no": 7,
-      "field": "Mode indicator"
+      "field": "Status A = Data Valid, V = Data Invalid"
     }
   ],
   "VTG": [
     {
       "no": 1,
-      "field": "Track, Degrees"
+      "field": "Track Degrees"
     },
     {
       "no": 2,
@@ -40,7 +202,7 @@
     },
     {
       "no": 3,
-      "field": "Track, Degrees"
+      "field": "Track Degrees"
     },
     {
       "no": 4,
@@ -66,27 +228,371 @@
   "ZDA": [
     {
       "no": 1,
-      "field": "UTC"
+      "field": "UTC time"
     },
     {
       "no": 2,
-      "field": "Day, 01 to 31 (UTC)"
+      "field": "Day"
     },
     {
       "no": 3,
-      "field": "Month, 01 to 12 (UTC)"
+      "field": "Month"
     },
     {
       "no": 4,
-      "field": "Year (UTC)"
+      "field": "Year"
     },
     {
       "no": 5,
-      "field": "Local zone hours"
+      "field": "Local time zone offset (hours)"
     },
     {
       "no": 6,
-      "field": "Local zone minutes"
+      "field": "Local time zone offset (minutes)"
+    }
+  ],
+  "RMC": [
+    {
+      "no": 1,
+      "field": "Time (UTC)"
+    },
+    {
+      "no": 2,
+      "field": "Status"
+    },
+    {
+      "no": 3,
+      "field": "Latitude"
+    },
+    {
+      "no": 4,
+      "field": "N or S"
+    },
+    {
+      "no": 5,
+      "field": "Longitude"
+    },
+    {
+      "no": 6,
+      "field": "E or W"
+    },
+    {
+      "no": 7,
+      "field": "Speed over ground"
+    },
+    {
+      "no": 8,
+      "field": "Track made good"
+    },
+    {
+      "no": 9,
+      "field": "Date"
+    },
+    {
+      "no": 10,
+      "field": "Magnetic Variation"
+    },
+    {
+      "no": 11,
+      "field": "E or W"
+    }
+  ],
+  "DBT": [
+    {
+      "no": 1,
+      "field": "Depth, feet"
+    },
+    {
+      "no": 2,
+      "field": "f = feet"
+    },
+    {
+      "no": 3,
+      "field": "Depth, meters"
+    },
+    {
+      "no": 4,
+      "field": "M = meters"
+    },
+    {
+      "no": 5,
+      "field": "Depth, Fathoms"
+    },
+    {
+      "no": 6,
+      "field": "F = Fathoms"
+    }
+  ],
+  "DPT": [
+    {
+      "no": 1,
+      "field": "Water depth relative to transducer"
+    },
+    {
+      "no": 2,
+      "field": "Offset from transducer"
+    },
+    {
+      "no": 3,
+      "field": "Maximum range scale in use"
+    }
+  ],
+  "HDT": [
+    {
+      "no": 1,
+      "field": "Heading, degrees true"
+    },
+    {
+      "no": 2,
+      "field": "T = True"
+    }
+  ],
+  "HDG": [
+    {
+      "no": 1,
+      "field": "Magnetic Sensor heading"
+    },
+    {
+      "no": 2,
+      "field": "Magnetic Deviation"
+    },
+    {
+      "no": 3,
+      "field": "Magnetic Deviation direction"
+    },
+    {
+      "no": 4,
+      "field": "Magnetic Variation"
+    },
+    {
+      "no": 5,
+      "field": "Magnetic Variation direction"
+    }
+  ],
+  "ROT": [
+    {
+      "no": 1,
+      "field": "Rate Of Turn"
+    },
+    {
+      "no": 2,
+      "field": "Status"
+    }
+  ],
+  "TTM": [
+    {
+      "no": 1,
+      "field": "Target Number"
+    },
+    {
+      "no": 2,
+      "field": "Target Distance"
+    },
+    {
+      "no": 3,
+      "field": "Bearing from own ship"
+    },
+    {
+      "no": 4,
+      "field": "Bearing Units"
+    },
+    {
+      "no": 5,
+      "field": "Target speed"
+    },
+    {
+      "no": 6,
+      "field": "Target Course"
+    },
+    {
+      "no": 7,
+      "field": "Course Units"
+    },
+    {
+      "no": 8,
+      "field": "Distance of closest-point-of-approach"
+    },
+    {
+      "no": 9,
+      "field": "Time until closest-point-of-approach"
+    },
+    {
+      "no": 10,
+      "field": "Target name"
+    },
+    {
+      "no": 11,
+      "field": "Target Status"
+    },
+    {
+      "no": 12,
+      "field": "Reference Target"
+    }
+  ],
+  "OSD": [
+    {
+      "no": 1,
+      "field": "Heading, degrees true"
+    },
+    {
+      "no": 2,
+      "field": "Status"
+    },
+    {
+      "no": 3,
+      "field": "Vessel Course"
+    },
+    {
+      "no": 4,
+      "field": "Course Reference"
+    },
+    {
+      "no": 5,
+      "field": "Vessel Speed"
+    },
+    {
+      "no": 6,
+      "field": "Speed Reference"
+    },
+    {
+      "no": 7,
+      "field": "Vessel Set"
+    },
+    {
+      "no": 8,
+      "field": "Vessel drift"
+    },
+    {
+      "no": 9,
+      "field": "Speed Units"
+    }
+  ],
+  "RSA": [
+    {
+      "no": 1,
+      "field": "Starboard rudder sensor"
+    },
+    {
+      "no": 2,
+      "field": "Status"
+    },
+    {
+      "no": 3,
+      "field": "Port rudder sensor"
+    },
+    {
+      "no": 4,
+      "field": "Status"
+    }
+  ],
+  "VLW": [
+    {
+      "no": 1,
+      "field": "Total cumulative distance"
+    },
+    {
+      "no": 2,
+      "field": "N = Nautical Miles"
+    },
+    {
+      "no": 3,
+      "field": "Water distance since Reset"
+    },
+    {
+      "no": 4,
+      "field": "N = Nautical Miles"
+    },
+    {
+      "no": 5,
+      "field": "Total cumulative ground distance"
+    },
+    {
+      "no": 6,
+      "field": "N = Nautical Miles"
+    },
+    {
+      "no": 7,
+      "field": "Ground distance since reset"
+    },
+    {
+      "no": 8,
+      "field": "N = Nautical Miles"
+    }
+  ],
+  "VBW": [
+    {
+      "no": 1,
+      "field": "Longitudinal water speed"
+    },
+    {
+      "no": 2,
+      "field": "Transverse water speed"
+    },
+    {
+      "no": 3,
+      "field": "Status, Water Speed"
+    },
+    {
+      "no": 4,
+      "field": "Longitudinal ground speed"
+    },
+    {
+      "no": 5,
+      "field": "Transverse ground speed"
+    },
+    {
+      "no": 6,
+      "field": "Status, Ground speed"
+    },
+    {
+      "no": 7,
+      "field": "Stern transverse water speed"
+    },
+    {
+      "no": 8,
+      "field": "Status, stern water speed"
+    },
+    {
+      "no": 9,
+      "field": "Stern transverse ground speed"
+    },
+    {
+      "no": 10,
+      "field": "Status, stern ground speed"
+    }
+  ],
+  "VHW": [
+    {
+      "no": 1,
+      "field": "Heading, degrees True"
+    },
+    {
+      "no": 2,
+      "field": "T = True"
+    },
+    {
+      "no": 3,
+      "field": "Heading, degrees Magnetic"
+    },
+    {
+      "no": 4,
+      "field": "M = Magnetic"
+    },
+    {
+      "no": 5,
+      "field": "Speed, knots"
+    },
+    {
+      "no": 6,
+      "field": "N = Knots"
+    },
+    {
+      "no": 7,
+      "field": "Speed, km/hr"
+    },
+    {
+      "no": 8,
+      "field": "K = km/hr"
     }
   ]
 }
