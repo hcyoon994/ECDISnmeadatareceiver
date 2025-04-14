@@ -36,20 +36,18 @@ namespace ECDISnmeadatareceiver
             var sentenceMap = loader.Load();
 
             if (sentenceMap == null)
-            {
                 AddLog($"Cannot Load 'nmea_sentence_format.json' file");
-                // 정지 시 재실행
+            else
+                AddLog($"NmeaSentence Format Map Load");
 
-            }
-            AddLog($"NmeaSentence Format Map Load");
-
-            IPAddress connectIp = IPAddress.Parse(ip); // 연결 IP 주소
-            //IPAddress connectIp = IPAddress.Any; // 연결 IP 주소
+            // 연결 IP 주소
+            IPAddress connectIp = IPAddress.Parse(ip);
+            //IPAddress connectIp = IPAddress.Any;
             
             AddLog($"UDP Multicast 수신 대기 중... {connectIp} : {listenPort}");
 
             // Multicast Join
-            IPEndPoint localEP = new IPEndPoint(IPAddress.Any, listenPort);
+            IPEndPoint localEP = new IPEndPoint(connectIp, listenPort);
             UdpClient udp = new UdpClient();
             udp.ExclusiveAddressUse = false;
             udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
@@ -63,14 +61,13 @@ namespace ECDISnmeadatareceiver
             {
                 if (string.IsNullOrEmpty(ip))
                 {
-                    //NIC 하나일때
+                    // NIC 하나일때
                     udp.JoinMulticastGroup(multicastIP);
                     AddLog($"JoinMulticastGroup 완료");
                 }
                 else
                 {
-                    //NIC복수개여서 어떤 랜포트에 타게팅할지 매개변수 넣어야함 예) ECDIS 192.168.1.20
-                    //NIC2와 연결. 디지털브릿지(192.168.1.20) - Ecdis(192.168.1.10)
+                    // NIC 복수개
                     try
                     {
                         udp.JoinMulticastGroup(multicastIP, IPAddress.Parse(ip));
@@ -162,12 +159,9 @@ namespace ECDISnmeadatareceiver
             var sentenceMap = loader.Load();
 
             if (sentenceMap == null)
-            {
                 AddLog($"Cannot Load 'nmea_sentence_format.json' file");
-                // 정지 시 재실행
-
-            }
-            AddLog($"NmeaSentence Format Map Load");
+            else
+                AddLog($"NmeaSentence Format Map Load");
 
             IPAddress connectIp = IPAddress.Parse(ip); // 연결 IP 주소
             //IPAddress connectIp = IPAddress.Any; // 연결 IP 주소
