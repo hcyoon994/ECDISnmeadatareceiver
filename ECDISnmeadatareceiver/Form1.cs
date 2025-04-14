@@ -92,7 +92,6 @@ namespace ECDISnmeadatareceiver
                         byte[] receivedBytes = udp.Receive(ref localEP);
                         string receivedData = Encoding.ASCII.GetString(receivedBytes);
 
-                        //AddLog($"받은 데이터 : {receivedData}");
                         Invoke(new Action(() =>
                         {
                             AddLog($"-----Multicast Begin-----");
@@ -115,7 +114,6 @@ namespace ECDISnmeadatareceiver
                             // field와 값을 매칭
                             if (sentenceMap.TryGetValue(sentenceId, out var fields))
                             {
-
                                 for (int i = 0; i < fields.Count && i < nmeaData.Fields.Length; i++)
                                 {
                                     Invoke(new Action(() =>
@@ -181,7 +179,6 @@ namespace ECDISnmeadatareceiver
                         byte[] receivedBytes = udpClient.Receive(ref remoteEP);
                         string receivedData = Encoding.ASCII.GetString(receivedBytes);
 
-                        //AddLog($"받은 데이터 : {receivedData}");
                         Invoke(new Action(() =>
                         {
                             AddLog($"-----Unicast Begin-----");
