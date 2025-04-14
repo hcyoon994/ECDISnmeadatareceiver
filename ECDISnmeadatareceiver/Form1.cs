@@ -36,20 +36,18 @@ namespace ECDISnmeadatareceiver
             var sentenceMap = loader.Load();
 
             if (sentenceMap == null)
-            {
                 AddLog($"Cannot Load 'nmea_sentence_format.json' file");
-                // 정지 시 재실행
+            else
+                AddLog($"NmeaSentence Format Map Load");
 
-            }
-            AddLog($"NmeaSentence Format Map Load");
-
-            IPAddress connectIp = IPAddress.Parse(ip); // 연결 IP 주소
-            //IPAddress connectIp = IPAddress.Any; // 연결 IP 주소
+            // 연결 IP 주소
+            IPAddress connectIp = IPAddress.Parse(ip);
+            //IPAddress connectIp = IPAddress.Any;
             
             AddLog($"UDP Multicast 수신 대기 중... {connectIp} : {listenPort}");
 
             // Multicast Join
-            IPEndPoint localEP = new IPEndPoint(IPAddress.Any, listenPort);
+            IPEndPoint localEP = new IPEndPoint(connectIp, listenPort);
             UdpClient udp = new UdpClient();
             udp.ExclusiveAddressUse = false;
             udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
@@ -162,12 +160,9 @@ namespace ECDISnmeadatareceiver
             var sentenceMap = loader.Load();
 
             if (sentenceMap == null)
-            {
                 AddLog($"Cannot Load 'nmea_sentence_format.json' file");
-                // 정지 시 재실행
-
-            }
-            AddLog($"NmeaSentence Format Map Load");
+            else
+                AddLog($"NmeaSentence Format Map Load");
 
             IPAddress connectIp = IPAddress.Parse(ip); // 연결 IP 주소
             //IPAddress connectIp = IPAddress.Any; // 연결 IP 주소
