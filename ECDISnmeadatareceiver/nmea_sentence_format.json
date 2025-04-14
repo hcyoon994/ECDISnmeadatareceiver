@@ -1,54 +1,74 @@
 {
-  "VDM": [
+  "DBT": [
     {
       "no": 1,
-      "field": "Total number of sentences needed to transfer the message"
+      "field": "Depth, feet"
     },
     {
       "no": 2,
-      "field": "Sentence number"
+      "field": "f = feet"
     },
     {
       "no": 3,
-      "field": "Sequential message identifier"
+      "field": "Depth, meters"
     },
     {
       "no": 4,
-      "field": "AIS Channel"
+      "field": "M = meters"
     },
     {
       "no": 5,
-      "field": "Encapsulated ITU-R M.1371 radio message"
+      "field": "Depth, Fathoms"
     },
     {
       "no": 6,
-      "field": "Number of fill-bits"
+      "field": "F = Fathoms"
     }
   ],
-  "VDO": [
+  "DPT": [
     {
       "no": 1,
-      "field": "Total number of sentences needed to transfer the message"
+      "field": "Water depth relative to transducer"
     },
     {
       "no": 2,
-      "field": "Sentence number"
+      "field": "Offset from transducer"
     },
     {
       "no": 3,
-      "field": "Sequential message identifier"
+      "field": "Maximum range scale in use"
+    }
+  ],
+  "HDT": [
+    {
+      "no": 1,
+      "field": "Heading, degrees true"
+    },
+    {
+      "no": 2,
+      "field": "T = True"
+    }
+  ],
+  "HDG": [
+    {
+      "no": 1,
+      "field": "Magnetic Sensor heading"
+    },
+    {
+      "no": 2,
+      "field": "Magnetic Deviation"
+    },
+    {
+      "no": 3,
+      "field": "Magnetic Deviation direction"
     },
     {
       "no": 4,
-      "field": "AIS Channel"
+      "field": "Magnetic Variation"
     },
     {
       "no": 5,
-      "field": "Encapsulated ITU-R M.1371 radio message"
-    },
-    {
-      "no": 6,
-      "field": "Number of fill-bits"
+      "field": "Magnetic Variation direction"
     }
   ],
   "MWV": [
@@ -71,40 +91,6 @@
     {
       "no": 5,
       "field": "Status, A = Data Valid"
-    }
-  ],
-  "VWR": [
-    {
-      "no": 1,
-      "field": "Wind direction magnitude in degrees"
-    },
-    {
-      "no": 2,
-      "field": "Wind direction Left/Right of bow"
-    },
-    {
-      "no": 3,
-      "field": "Speed"
-    },
-    {
-      "no": 4,
-      "field": "N = Knots"
-    },
-    {
-      "no": 5,
-      "field": "Speed"
-    },
-    {
-      "no": 6,
-      "field": "M = Meters Per Second"
-    },
-    {
-      "no": 7,
-      "field": "Speed"
-    },
-    {
-      "no": 8,
-      "field": "K = Kilometers Per Hour"
     }
   ],
   "GGA": [
@@ -191,64 +177,42 @@
       "field": "Status A = Data Valid, V = Data Invalid"
     }
   ],
-  "VTG": [
+  "OSD": [
     {
       "no": 1,
-      "field": "Track Degrees"
+      "field": "Heading, degrees true"
     },
     {
       "no": 2,
-      "field": "T = True"
+      "field": "Status"
     },
     {
       "no": 3,
-      "field": "Track Degrees"
+      "field": "Vessel Course"
     },
     {
       "no": 4,
-      "field": "M = Magnetic"
+      "field": "Course Reference"
     },
     {
       "no": 5,
-      "field": "Speed Knots"
+      "field": "Vessel Speed"
     },
     {
       "no": 6,
-      "field": "N = Knots"
+      "field": "Speed Reference"
     },
     {
       "no": 7,
-      "field": "Speed Kilometers Per Hour"
+      "field": "Vessel Set"
     },
     {
       "no": 8,
-      "field": "K = Kilometers Per Hour"
-    }
-  ],
-  "ZDA": [
-    {
-      "no": 1,
-      "field": "UTC time"
+      "field": "Vessel drift"
     },
     {
-      "no": 2,
-      "field": "Day"
-    },
-    {
-      "no": 3,
-      "field": "Month"
-    },
-    {
-      "no": 4,
-      "field": "Year"
-    },
-    {
-      "no": 5,
-      "field": "Local time zone offset (hours)"
-    },
-    {
-      "no": 6,
-      "field": "Local time zone offset (minutes)"
+      "no": 9,
+      "field": "Speed Units"
     }
   ],
   "RMC": [
@@ -297,76 +261,22 @@
       "field": "E or W"
     }
   ],
-  "DBT": [
+  "RSA": [
     {
       "no": 1,
-      "field": "Depth, feet"
+      "field": "Starboard rudder sensor"
     },
     {
       "no": 2,
-      "field": "f = feet"
+      "field": "Status"
     },
     {
       "no": 3,
-      "field": "Depth, meters"
+      "field": "Port rudder sensor"
     },
     {
       "no": 4,
-      "field": "M = meters"
-    },
-    {
-      "no": 5,
-      "field": "Depth, Fathoms"
-    },
-    {
-      "no": 6,
-      "field": "F = Fathoms"
-    }
-  ],
-  "DPT": [
-    {
-      "no": 1,
-      "field": "Water depth relative to transducer"
-    },
-    {
-      "no": 2,
-      "field": "Offset from transducer"
-    },
-    {
-      "no": 3,
-      "field": "Maximum range scale in use"
-    }
-  ],
-  "HDT": [
-    {
-      "no": 1,
-      "field": "Heading, degrees true"
-    },
-    {
-      "no": 2,
-      "field": "T = True"
-    }
-  ],
-  "HDG": [
-    {
-      "no": 1,
-      "field": "Magnetic Sensor heading"
-    },
-    {
-      "no": 2,
-      "field": "Magnetic Deviation"
-    },
-    {
-      "no": 3,
-      "field": "Magnetic Deviation direction"
-    },
-    {
-      "no": 4,
-      "field": "Magnetic Variation"
-    },
-    {
-      "no": 5,
-      "field": "Magnetic Variation direction"
+      "field": "Status"
     }
   ],
   "ROT": [
@@ -429,94 +339,56 @@
       "field": "Reference Target"
     }
   ],
-  "OSD": [
+  "VDM": [
     {
       "no": 1,
-      "field": "Heading, degrees true"
+      "field": "Total number of sentences needed to transfer the message"
     },
     {
       "no": 2,
-      "field": "Status"
+      "field": "Sentence number"
     },
     {
       "no": 3,
-      "field": "Vessel Course"
+      "field": "Sequential message identifier"
     },
     {
       "no": 4,
-      "field": "Course Reference"
+      "field": "AIS Channel"
     },
     {
       "no": 5,
-      "field": "Vessel Speed"
+      "field": "Encapsulated ITU-R M.1371 radio message"
     },
     {
       "no": 6,
-      "field": "Speed Reference"
-    },
-    {
-      "no": 7,
-      "field": "Vessel Set"
-    },
-    {
-      "no": 8,
-      "field": "Vessel drift"
-    },
-    {
-      "no": 9,
-      "field": "Speed Units"
+      "field": "Number of fill-bits"
     }
   ],
-  "RSA": [
+  "VDO": [
     {
       "no": 1,
-      "field": "Starboard rudder sensor"
+      "field": "Total number of sentences needed to transfer the message"
     },
     {
       "no": 2,
-      "field": "Status"
+      "field": "Sentence number"
     },
     {
       "no": 3,
-      "field": "Port rudder sensor"
+      "field": "Sequential message identifier"
     },
     {
       "no": 4,
-      "field": "Status"
-    }
-  ],
-  "VLW": [
-    {
-      "no": 1,
-      "field": "Total cumulative distance"
-    },
-    {
-      "no": 2,
-      "field": "N = Nautical Miles"
-    },
-    {
-      "no": 3,
-      "field": "Water distance since Reset"
-    },
-    {
-      "no": 4,
-      "field": "N = Nautical Miles"
+      "field": "AIS Channel"
     },
     {
       "no": 5,
-      "field": "Total cumulative ground distance"
+      "field": "Encapsulated ITU-R M.1371 radio message"
     },
     {
       "no": 6,
-      "field": "N = Nautical Miles"
-    },
-    {
-      "no": 7,
-      "field": "Ground distance since reset"
-    },
-    {
-      "no": 8,
-      "field": "N = Nautical Miles"
+      "field": "Number of fill-bits"
     }
   ],
   "VBW": [
@@ -593,6 +465,134 @@
     {
       "no": 8,
       "field": "K = km/hr"
+    }
+  ],
+  "VLW": [
+    {
+      "no": 1,
+      "field": "Total cumulative distance"
+    },
+    {
+      "no": 2,
+      "field": "N = Nautical Miles"
+    },
+    {
+      "no": 3,
+      "field": "Water distance since Reset"
+    },
+    {
+      "no": 4,
+      "field": "N = Nautical Miles"
+    },
+    {
+      "no": 5,
+      "field": "Total cumulative ground distance"
+    },
+    {
+      "no": 6,
+      "field": "N = Nautical Miles"
+    },
+    {
+      "no": 7,
+      "field": "Ground distance since reset"
+    },
+    {
+      "no": 8,
+      "field": "N = Nautical Miles"
+    }
+  ],
+  "VTG": [
+    {
+      "no": 1,
+      "field": "Track Degrees"
+    },
+    {
+      "no": 2,
+      "field": "T = True"
+    },
+    {
+      "no": 3,
+      "field": "Track Degrees"
+    },
+    {
+      "no": 4,
+      "field": "M = Magnetic"
+    },
+    {
+      "no": 5,
+      "field": "Speed Knots"
+    },
+    {
+      "no": 6,
+      "field": "N = Knots"
+    },
+    {
+      "no": 7,
+      "field": "Speed Kilometers Per Hour"
+    },
+    {
+      "no": 8,
+      "field": "K = Kilometers Per Hour"
+    }
+  ],
+  "VWR": [
+    {
+      "no": 1,
+      "field": "Wind direction magnitude in degrees"
+    },
+    {
+      "no": 2,
+      "field": "Wind direction Left/Right of bow"
+    },
+    {
+      "no": 3,
+      "field": "Speed"
+    },
+    {
+      "no": 4,
+      "field": "N = Knots"
+    },
+    {
+      "no": 5,
+      "field": "Speed"
+    },
+    {
+      "no": 6,
+      "field": "M = Meters Per Second"
+    },
+    {
+      "no": 7,
+      "field": "Speed"
+    },
+    {
+      "no": 8,
+      "field": "K = Kilometers Per Hour"
+    }
+  ],
+  "ZDA": [
+    {
+      "no": 1,
+      "field": "UTC time"
+    },
+    {
+      "no": 2,
+      "field": "Day"
+    },
+    {
+      "no": 3,
+      "field": "Month"
+    },
+    {
+      "no": 4,
+      "field": "Year"
+    },
+    {
+      "no": 5,
+      "field": "Local time zone offset (hours)"
+    },
+    {
+      "no": 6,
+      "field": "Local time zone offset (minutes)"
     }
   ]
 }
