@@ -23,16 +23,15 @@ namespace ECDISnmeadatareceiver
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            int listenPort = 60016;
-            string ip = "239.192.0.21";
+            //int listenPort = 60016;
+            //string ip = "239.192.0.21";
 
-            UdpMulticastClient(listenPort, ip);
-            UdpUnicastClient(60000, "127.0.0.1"); // Unicast 방식으로는 ECDIS 데이터를 받아올 수 없음
+            LoadUdpMulticastClient(60016, "239.192.0.21"); // ECDIS 연결
+            //LoadUdpUnicastClient(60000, "127.0.0.1"); // Unicast 방식으로는 ECDIS 데이터를 받아올 수 없음
         }
 
-        public void UdpMulticastClient(int listenPort, string ip)
+        public void LoadUdpMulticastClient(int listenPort, string ip)
         {
-
             var loader = new NmeaSentenceFormatLoader();
             var sentenceMap = loader.Load();
 
@@ -93,16 +92,6 @@ namespace ECDISnmeadatareceiver
                 {
                     try
                     {
-                        //    byte[] receivedBytes = udpClient.Receive(ref remoteEP);
-                        //    string receivedData = Encoding.ASCII.GetString(receivedBytes);
-
-                        //    // UI 스레드에서 컨트롤 접근은 Invoke 필요 
-                        //    Invoke(new Action(() =>
-                        //    {
-                        //        AddLog($"받은 데이터: {receivedData}");
-                        //        listBox1.SelectedIndex = listBox1.Items.Count - 1;
-                        //    }));
-
                         byte[] receivedBytes = udp.Receive(ref localEP);
                         string receivedData = Encoding.ASCII.GetString(receivedBytes);
 
@@ -116,28 +105,37 @@ namespace ECDISnmeadatareceiver
                         // 받은 nmea 데이터를 처리하는 function 생성
                         NmeaResult nmeaData = ParseNmeaSentence(receivedData);
 
-                        string talkerId = Convert.ToString(nmeaData.Fields[0]).Substring(0, 2);
-                        string sentenceId = Convert.ToString(nmeaData.Fields[0]).Substring(2, 3);
-                        Invoke(new Action(() =>
+                        if (nmeaData.IsValid)
                         {
-                            AddLog($"TalkerID : {talkerId}");
-                            AddLog($"SentenceID : {sentenceId}");
-                        }));
-
-                        // field와 값을 매칭
-                        if (sentenceMap.TryGetValue(sentenceId, out var fields))
-                        {
-
-                            for (int i = 0; i < fields.Count && i < nmeaData.Fields.Length; i++)
+                            string talkerId = Convert.ToString(nmeaData.Fields[0]).Substring(0, 2);
+                            string sentenceId = Convert.ToString(nmeaData.Fields[0]).Substring(2, 3);
+                            Invoke(new Action(() =>
                             {
-                                Invoke(new Action(() =>
+                                AddLog($"TalkerID : {talkerId}");
+                                AddLog($"SentenceID : {sentenceId}");
+                            }));
+
+                            // field와 값을 매칭
+                            if (sentenceMap.TryGetValue(sentenceId, out var fields))
+                            {
+
+                                for (int i = 0; i < fields.Count && i < nmeaData.Fields.Length; i++)
                                 {
-                                    AddLog($"Data Field #{i + 1} - {fields[i].field} : {Convert.ToString(nmeaData.Fields[i + 1])}");
-                                    //listBox1.SelectedIndex = listBox1.Items.Count - 1;
-                                }));
+                                    Invoke(new Action(() =>
+                                    {
+                                        AddLog($"Data Field #{i + 1} - {fields[i].field} : {Convert.ToString(nmeaData.Fields[i + 1])}");
+                                        //listBox1.SelectedIndex = listBox1.Items.Count - 1;
+                                    }));
+                                }
                             }
                         }
-
+                        else
+                        {
+                            Invoke(new Action(() =>
+                            {
+                                AddLog($"데이터 파싱 오류");
+                            }));
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -153,16 +151,13 @@ namespace ECDISnmeadatareceiver
                         {
                             AddLog($"-----Multicast Finish-----");
                         }));
-
                     }
                 }
             });
-
         }
 
-        public void UdpUnicastClient(int listenPort, string ip)
+        public void LoadUdpUnicastClient(int listenPort, string ip)
         {
-
             var loader = new NmeaSentenceFormatLoader();
             var sentenceMap = loader.Load();
 
@@ -189,16 +184,6 @@ namespace ECDISnmeadatareceiver
                 {
                     try
                     {
-                        //    byte[] receivedBytes = udpClient.Receive(ref remoteEP);
-                        //    string receivedData = Encoding.ASCII.GetString(receivedBytes);
-
-                        //    // UI 스레드에서 컨트롤 접근은 Invoke 필요 
-                        //    Invoke(new Action(() =>
-                        //    {
-                        //        AddLog($"받은 데이터: {receivedData}");
-                        //        listBox1.SelectedIndex = listBox1.Items.Count - 1;
-                        //    }));
-
                         byte[] receivedBytes = udpClient.Receive(ref remoteEP);
                         string receivedData = Encoding.ASCII.GetString(receivedBytes);
 
@@ -211,30 +196,39 @@ namespace ECDISnmeadatareceiver
 
                         // 받은 nmea 데이터를 처리하는 function 생성
                         NmeaResult nmeaData = ParseNmeaSentence(receivedData);
-
-                        string talkerId = Convert.ToString(nmeaData.Fields[0]).Substring(0, 2);
-                        string sentenceId = Convert.ToString(nmeaData.Fields[0]).Substring(2, 3);
-
-                        Invoke(new Action(() =>
+                        
+                        if (nmeaData.IsValid)
                         {
-                            AddLog($"TalkerID : {talkerId}");
-                            AddLog($"SentenceID : {sentenceId}");
-                        }));
+                            string talkerId = Convert.ToString(nmeaData.Fields[0]).Substring(0, 2);
+                            string sentenceId = Convert.ToString(nmeaData.Fields[0]).Substring(2, 3);
 
-                        // field와 값을 매칭
-                        if (sentenceMap.TryGetValue(sentenceId, out var fields))
-                        {
-
-                            for (int i = 0; i < fields.Count && i < nmeaData.Fields.Length; i++)
+                            Invoke(new Action(() =>
                             {
-                                Invoke(new Action(() =>
+                                AddLog($"TalkerID : {talkerId}");
+                                AddLog($"SentenceID : {sentenceId}");
+                            }));
+
+                            // field와 값을 매칭
+                            if (sentenceMap.TryGetValue(sentenceId, out var fields))
+                            {
+
+                                for (int i = 0; i < fields.Count && i < nmeaData.Fields.Length; i++)
                                 {
-                                    AddLog($"Data Field #{i + 1} - {fields[i].field} : {Convert.ToString(nmeaData.Fields[i + 1])}");
-                                    //listBox1.SelectedIndex = listBox1.Items.Count - 1;
-                                }));
+                                    Invoke(new Action(() =>
+                                    {
+                                        AddLog($"Data Field #{i + 1} - {fields[i].field} : {Convert.ToString(nmeaData.Fields[i + 1])}");
+                                        //listBox1.SelectedIndex = listBox1.Items.Count - 1;
+                                    }));
+                                }
                             }
                         }
-
+                        else
+                        {
+                            Invoke(new Action(() =>
+                            {
+                                AddLog($"데이터 파싱 오류");
+                            }));
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -250,7 +244,6 @@ namespace ECDISnmeadatareceiver
                         {
                             AddLog($"-----Unicast Finish-----");
                         }));
-
                     }
                 }
             });
@@ -271,11 +264,13 @@ namespace ECDISnmeadatareceiver
 
             try
             {
+                result.IsValid = false;
+
                 // 0. 예외처리
                 // 값이 없는 경우
-                // 센텐스가 $/!로 시작되지 않는 경우 (IEC 61162에 따라 수정 가능)
+                // 센텐스가 $/!로 시작되지 않는 경우
                 // 체크섬 구분자 *이 없는 경우
-                // 센텐스 Max Length 보다 긴 경우 (IEC 61162에 따라 수정 가능)
+                // 센텐스 Max Length 보다 긴 경우
                 if (string.IsNullOrWhiteSpace(sentence)) return result;
                 if (!(sentence.StartsWith("$") || sentence.StartsWith("!"))) return result;
                 if (!sentence.Contains("*")) return result;
@@ -345,11 +340,16 @@ namespace ECDISnmeadatareceiver
             {
                 string jsonString = File.ReadAllText(jsonFilePath);
                 var sentenceMap = JsonSerializer.Deserialize<Dictionary<string, List<NmeaSentenceField>>>(jsonString);
-                return sentenceMap ?? new Dictionary<string, List<NmeaSentenceField>>();
+
+                if (sentenceMap == null)
+                {
+                    sentenceMap = new Dictionary<string, List<NmeaSentenceField>>();
+                }
+
+                return sentenceMap;
             }
         }
         #endregion
-
 
         #region logging
         private void AddLog(string message)

@@ -36,9 +36,9 @@ namespace ECDISnmeadatareceiver
             // 
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 12;
-            this.listBox1.Location = new System.Drawing.Point(36, 80);
+            this.listBox1.Location = new System.Drawing.Point(36, 32);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(732, 340);
+            this.listBox1.Size = new System.Drawing.Size(732, 388);
             this.listBox1.TabIndex = 0;
             // 
             // Form1
