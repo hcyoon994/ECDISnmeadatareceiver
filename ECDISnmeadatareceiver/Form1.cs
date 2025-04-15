@@ -53,7 +53,6 @@ namespace ECDISnmeadatareceiver
             udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             udp.ExclusiveAddressUse = false;
             udp.Client.Bind(new IPEndPoint(IPAddress.Any, listenPort));
-            //udp.Client.Bind(localEP);
 
             IPAddress multicastIP = IPAddress.Parse(ip);
 
@@ -98,7 +97,7 @@ namespace ECDISnmeadatareceiver
                             AddLog($"받은 데이터 : {receivedData}");
                         }));
 
-                        // 받은 nmea 데이터를 처리하는 function 생성
+                        // 받은 nmea 데이터를 처리
                         NmeaResult nmeaData = ParseNmeaSentence(receivedData);
 
                         if (nmeaData.IsValid)
@@ -185,7 +184,7 @@ namespace ECDISnmeadatareceiver
                             AddLog($"받은 데이터 : {receivedData}");
                         }));
 
-                        // 받은 nmea 데이터를 처리하는 function 생성
+                        // 받은 nmea 데이터를 처리
                         NmeaResult nmeaData = ParseNmeaSentence(receivedData);
                         
                         if (nmeaData.IsValid)
@@ -259,20 +258,29 @@ namespace ECDISnmeadatareceiver
 
                 // 0. 예외처리
                 // 값이 없는 경우
+                if (string.IsNullOrWhiteSpace(sentence)) 
+                    return result;
+
                 // 센텐스가 $/!로 시작되지 않는 경우
+                if (!(sentence.StartsWith("$") || sentence.StartsWith("!"))) 
+                    return result;
+
                 // 체크섬 구분자 *이 없는 경우
+                if (!sentence.Contains("*")) 
+                    return result;
+
                 // 센텐스 Max Length 보다 긴 경우
-                if (string.IsNullOrWhiteSpace(sentence)) return result;
-                if (!(sentence.StartsWith("$") || sentence.StartsWith("!"))) return result;
-                if (!sentence.Contains("*")) return result;
-                if (sentence.Length > 82) return result;
+                if (sentence.Length > 82) 
+                    return result;
 
                 // 1. $ 제거
-                if (sentence.StartsWith("$") || sentence.StartsWith("!")) sentence = sentence.Substring(1);
+                if (sentence.StartsWith("$") || sentence.StartsWith("!")) 
+                    sentence = sentence.Substring(1);
 
                 // 2. 체크섬 분리
                 string[] parts = sentence.Split('*');
-                if (parts.Length != 2) return result;
+                if (parts.Length != 2) 
+                    return result;
 
                 string dataPart = parts[0];
                 string checksumStr = parts[1].Trim();
@@ -308,6 +316,7 @@ namespace ECDISnmeadatareceiver
                 result.IsValid = true;
                 result.Fields = fields;
                 result.Checksum = actualChecksum;
+
                 return result;
             }
             catch
