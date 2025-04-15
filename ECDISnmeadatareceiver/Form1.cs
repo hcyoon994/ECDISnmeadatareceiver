@@ -26,7 +26,8 @@ namespace ECDISnmeadatareceiver
             //int listenPort = 60016;
             //string ip = "239.192.0.21";
 
-            LoadUdpMulticastClient(60016, "239.192.0.21"); // ECDIS 연결
+            LoadUdpMulticastClient(60021, "239.192.0.21"); // ECDIS P450 - Simple binary
+            //LoadUdpMulticastClient(60009, "239.192.0.9"); // ECDIS P450 - NMEA
             //LoadUdpUnicastClient(60000, "127.0.0.1"); // Unicast 방식으로는 ECDIS 데이터를 받아올 수 없음
         }
 
