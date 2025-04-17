@@ -289,6 +289,36 @@
       "field": "Status"
     }
   ],
+  "RTE": [
+    {
+      "no": 1,
+      "field": "Total number of sentence being transmitted"
+    },
+    {
+      "no": 2,
+      "field": "Sentence number"
+    },
+    {
+      "no": 3,
+      "field": "Message Mode"
+    },
+    {
+      "no": 4,
+      "field": "Route Identifier"
+    },
+    {
+      "no": 5,
+      "field": "Waypoint Identifier"
+    },
+    {
+      "no": 6,
+      "field": "Aditional Waypoint Identifiers"
+    },
+    {
+      "no": 7,
+      "field": "Waypoint 'n' Identifier"
+    }
+  ],
   "TTM": [
     {
       "no": 1,
@@ -567,6 +597,28 @@
     {
       "no": 8,
       "field": "K = Kilometers Per Hour"
+    }
+  ],
+  "WPL": [
+    {
+      "no": 1,
+      "field": "Waypoint Latitude"
+    },
+    {
+      "no": 2,
+      "field": "N/S"
+    },
+    {
+      "no": 3,
+      "field": "Waypoint Longitude"
+    },
+    {
+      "no": 4,
+      "field": "E/W"
+    },
+    {
+      "no": 5,
+      "field": "Waypoint Identifier"
     }
   ],
   "ZDA": [

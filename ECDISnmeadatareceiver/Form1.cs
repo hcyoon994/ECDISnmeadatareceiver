@@ -23,11 +23,8 @@ namespace ECDISnmeadatareceiver
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //int listenPort = 60016;
-            //string ip = "239.192.0.21";
-
-            LoadUdpMulticastClient(60021, "239.192.0.21"); // ECDIS P450 - Simple binary
-            //LoadUdpMulticastClient(60009, "239.192.0.9"); // ECDIS P450 - NMEA
+            LoadUdpMulticastClient(60025, "239.192.0.25"); // ECDIS P450 - Simple binary
+            LoadUdpMulticastClient(60015, "239.192.0.15"); // ECDIS P450 - NMEA
             //LoadUdpUnicastClient(60000, "127.0.0.1"); // Unicast 방식으로는 ECDIS 데이터를 받아올 수 없음
         }
 
@@ -97,6 +94,8 @@ namespace ECDISnmeadatareceiver
                             AddLog($"-----Multicast Begin-----");
                             AddLog($"받은 데이터 : {receivedData}");
                         }));
+
+                        // 받은 데이터를 RAW 파일로 저장
 
                         // 받은 nmea 데이터를 처리
                         NmeaResult nmeaData = ParseNmeaSentence(receivedData);
@@ -271,8 +270,8 @@ namespace ECDISnmeadatareceiver
                     return result;
 
                 // 센텐스 Max Length 보다 긴 경우
-                if (sentence.Length > 82) 
-                    return result;
+                //if (sentence.Length > 82) 
+                //    return result;
 
                 // 1. $ 제거
                 if (sentence.StartsWith("$") || sentence.StartsWith("!")) 
