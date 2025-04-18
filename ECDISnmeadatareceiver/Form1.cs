@@ -36,8 +36,10 @@ namespace ECDISnmeadatareceiver
             SendMulticastUdp("239.192.0.15", 60015, CreateReqECDISDataSentence());
 
             // 60025 통신으로 패킷 데이터 수신
+            StartReceiveLoop(udpClient2, 60025);
 
             // 60015 통신으로 통신 완료 신호 수신
+            StartReceiveLoop(udpClient1, 60015);
 
 
 
@@ -134,7 +136,67 @@ namespace ECDISnmeadatareceiver
         }
 
         // 멀티캐스트 통신 수신
+        void StartReceiveLoop(UdpClient udp, int port)
+        {
+            Task.Run(() =>
+            {
+                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, port);
+                while (true)
+                {
+                    try
+                    {
+                        byte[] receivedBytes = udp.Receive(ref remoteEP);
 
+                        if (port == 60015)
+                            ProcessNmea(receivedBytes);
+                        else if (port == 60025)
+                            ProcessRtz(receivedBytes);
+                    }
+                    catch (Exception ex)
+                    {
+                        Invoke(new Action(() =>
+                        {
+                            AddLog($"[RX Error] {port}: {ex.Message}");
+                        }));
+                    }
+                }
+            });
+        }
+
+        // NMEA Sentence 처리
+        public void ProcessNmea(byte[] data)
+        {
+            string header = Encoding.ASCII.GetString(data.Take(5).ToArray());
+            if (header != "UdPbC") return;
+
+            string sentence = Encoding.ASCII.GetString(data.Skip(5).ToArray());
+
+            // 기존 NMEA 처리 로직 재사용
+            NmeaSentence result = ParseNmeaSentence(sentence);
+        }
+
+        // 450 Message 처리
+        public void Process450Message(byte[] data)
+        {
+            string header = Encoding.ASCII.GetString(data.Take(6).ToArray());
+            if (header == "RaUdP")
+                ProcessRtz(data);
+
+        }
+
+        public void ProcessRtz(byte[] data)
+        {
+            string header = Encoding.ASCII.GetString(data.Take(6).ToArray());
+            if (header != "RaUdP") return;
+
+            string xml = Encoding.UTF8.GetString(data.Skip(6).ToArray());
+            SaveRtzXmlToFile(xml);
+
+            Invoke(new Action(() =>
+            {
+                AddLog($"[RX] RTZ XML 수신 및 저장 완료");
+            }));
+        }
         #endregion
 
         #region 450 Data
@@ -160,7 +222,7 @@ namespace ECDISnmeadatareceiver
             // \$SMRRT,Q,,,,,*1B
             // 요청 nmea sentence 입력
             var sentence = "$SMRRT,Q,,,,,";
-            msg += tagBlock + GetChecksum(sentence);
+            msg += sentence + GetChecksum(sentence);
 
             return msg;
         }
@@ -345,6 +407,16 @@ namespace ECDISnmeadatareceiver
 
             // 항상 마지막 항목이 선택되게 (자동 스크롤)
             //listBox1.TopIndex = listBox1.Items.Count - 1;
+        }
+
+        void SaveRtzXmlToFile(string xml)
+        {
+            string rtzDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "rtz");
+            if (!Directory.Exists(rtzDir))
+                Directory.CreateDirectory(rtzDir);
+
+            string filePath = Path.Combine(rtzDir, $"RTZ_{DateTime.Now:yyyyMMdd_HHmmss}.xml");
+            File.WriteAllText(filePath, xml);
         }
         #endregion
 
