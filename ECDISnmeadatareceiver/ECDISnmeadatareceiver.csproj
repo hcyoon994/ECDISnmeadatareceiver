@@ -77,6 +77,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Parser.NmeaResultClass.cs">
+      <SubType>Form</SubType>
+		<DependentUpon>Parser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Parser.MulticastUdpClient.cs">
+      <SubType>Form</SubType>
+		<DependentUpon>Parser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Parser.cs">
       <SubType>Form</SubType>
     </Compile>

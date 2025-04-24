@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -52,195 +51,6 @@ namespace ECDISnmeadatareceiver
             SendMulticastUdpFrom60015("239.192.0.15", 60015, requestData);
             AddLog("[Send] 60015로 요청 메시지 전송 완료");
         }
-
-        #region MulticastUdpClient
-        public void Create60015UdpClient()
-        {
-            if (udp60015 == null)
-            {
-                udp60015 = new UdpClient();
-                udp60015.ExclusiveAddressUse = false;
-                udp60015.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                udp60015.Client.Bind(new IPEndPoint(IPAddress.Any, 60015));
-                udp60015.JoinMulticastGroup(IPAddress.Parse("239.192.0.15"));
-
-                StartReceiveLoop(udp60015, 60015);
-                AddLog("[60015] 멀티캐스트 그룹 가입 완료");
-            }
-            else
-            {
-                AddLog("[60015] 이미 멀티캐스트 그룹에 가입되어 있음");
-            }
-        }
-
-        public void Create60025UdpClient()
-        {
-            if (udp60025 == null)
-            {
-                udp60025 = new UdpClient();
-                udp60025.ExclusiveAddressUse = false;
-                udp60025.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                udp60025.Client.Bind(new IPEndPoint(IPAddress.Any, 60025));
-                udp60025.JoinMulticastGroup(IPAddress.Parse("239.192.0.25"));
-
-                StartReceiveLoop(udp60025, 60025);
-                AddLog("[60025] 멀티캐스트 그룹 가입 완료");
-            }
-            else
-            {
-                AddLog("[60025] 이미 멀티캐스트 그룹에 가입되어 있음");
-            }
-        }
-
-        public void Create60002UdpClient()
-        {
-            if (udp60002 == null)
-            {
-                udp60002 = new UdpClient();
-                udp60002.ExclusiveAddressUse = false;
-                udp60002.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                udp60002.Client.Bind(new IPEndPoint(IPAddress.Any, 60002));
-                udp60002.JoinMulticastGroup(IPAddress.Parse("239.192.0.2"));
-
-                StartReceiveLoop(udp60002, 60002);
-                AddLog("[60002] 멀티캐스트 그룹 가입 완료");
-            }
-            else
-            {
-                AddLog("[60002] 이미 멀티캐스트 그룹에 가입되어 있음");
-            }
-        }
-
-        void StartReceiveLoop(UdpClient client, int portNo)
-        {
-            Task.Run(async () =>
-            {
-                while (true)
-                {
-                    try
-                    {
-                        var result = await client.ReceiveAsync();
-                        string msg = Encoding.ASCII.GetString(result.Buffer);
-                        AddLog($"[Receive:{portNo}] {msg}");
-
-                        string header = Encoding.ASCII.GetString(result.Buffer.Take(5).ToArray());
-
-                        if (header == "RaUdP")
-                            ProcessRtz(result.Buffer);
-                        else if (header == "UdPbC")
-                            ProcessNmea(result.Buffer);
-                    }
-                    catch (Exception ex)
-                    {
-                        AddLog($"[Error:{portNo}] {ex.Message}");
-                    }
-                }
-            });
-
-            Task.Delay(5000);
-        }
-
-        // 멀티캐스트 통신 송신
-        public void SendMulticastUdpFrom60015(string multicastIP, int port, string str)
-        {
-            byte[] data = Encoding.ASCII.GetBytes(str);
-            SendMulticastUdpFrom60015(multicastIP, port, data);
-        }
-
-        public void SendMulticastUdpFrom60015(string multicastIP, int port, byte[] data)
-        {
-            try
-            {
-                if (udp60015 == null)
-                {
-                    AddLog("[Error] udp60015가 초기화되지 않았습니다.");
-                    return;
-                }
-
-                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(multicastIP), port);
-                udp60015.Ttl = 16;
-                udp60015.Send(data, data.Length, remoteEP);
-                AddLog($"[Send] {multicastIP}:{port} 송신 완료 ({data.Length} bytes)");
-            }
-            catch (Exception ex)
-            {
-                AddLog($"[Error] 송신 실패: {ex.Message}");
-                throw;
-            }
-        }
-
-        // NMEA Sentence 처리
-        public void ProcessNmea(byte[] data)
-        {
-            string header = Encoding.ASCII.GetString(data.Take(5).ToArray());
-            if (header != "UdPbC") return;
-
-            string sentence = Encoding.ASCII.GetString(data.Skip(5).ToArray());
-
-            // 기존 NMEA 처리 로직 재사용
-            NmeaSentence result = ParseNmeaSentence(sentence);
-        }
-
-        // 450 Message 처리
-        public void Process450Message(byte[] data)
-        {
-            string header = Encoding.ASCII.GetString(data.Take(6).ToArray());
-            if (header == "RaUdP")
-                ProcessRtz(data);
-
-        }
-
-        public void ProcessRtz(byte[] data)
-        {
-            string header = Encoding.ASCII.GetString(data.Take(5).ToArray());
-            if (header != "RaUdP") return;
-
-            string xml = Encoding.UTF8.GetString(data.Skip(5).ToArray());
-            SaveRtzXmlToFile(xml);
-
-            Invoke(new Action(() =>
-            {
-                AddLog($"[RX] RTZ XML 수신 및 저장 완료" + xml.Trim());
-            }));
-        }
-        #endregion
-
-        #region 450 Data
-        public string MakeUdPbC450Message()
-        {
-            // UdPbC\s:SM0001,d:EI0001*29\$SMRRT,Q,,,,,*1B
-            string msg = "";
-
-            string backslash = "\\";
-            string sourceId = "SM0001";
-            string destinationId = "EI0001";
-            string postFix = "\r\n";
-
-            // ex : UdPbC \s:SM0001,d:EI0001*29\$SMRRT,Q,,,,,*1B<CR><LF>
-            // UdPbC
-            // Datagram Header
-            msg += "UdPbC" + (char)0;
-
-            // UdPbC \s:SM0001,d:EI0001*29
-            // TAG param = Source & Destination Identifier 
-            // 나중에 IEC61162-450 기준으로 생성하는 utils 만들기
-            string tagBlock = "s:" + sourceId + ",d:" + destinationId;
-            msg += backslash + tagBlock + GetChecksum(tagBlock);
-
-            // \$SMRRT,Q,,,,,*1B
-            // 요청 nmea sentence 입력
-            var sentence = "SMRRT,Q,,,,,";
-            msg += backslash + "$" + sentence + GetChecksum(sentence) + postFix;
-
-            return msg;
-        }
-
-        public byte[] CreateReqECDISDataSentence()
-        {
-            string msg = MakeUdPbC450Message();
-            return Encoding.ASCII.GetBytes(msg);
-        }
-        #endregion
 
         #region utils
         public string GetChecksum(string str)
@@ -301,6 +111,41 @@ namespace ECDISnmeadatareceiver
                     AddLog($"데이터 파싱 오류");
                 }));
             }
+        }
+
+        public string MakeUdPbC450Message()
+        {
+            // UdPbC\s:SM0001,d:EI0001*29\$SMRRT,Q,,,,,*1B
+            string msg = "";
+
+            string backslash = "\\";
+            string sourceId = "SM0001";
+            string destinationId = "EI0001";
+            string postFix = "\r\n";
+
+            // ex : UdPbC \s:SM0001,d:EI0001*29\$SMRRT,Q,,,,,*1B<CR><LF>
+            // UdPbC
+            // Datagram Header
+            msg += "UdPbC" + (char)0;
+
+            // UdPbC \s:SM0001,d:EI0001*29
+            // TAG param = Source & Destination Identifier 
+            // 나중에 IEC61162-450 기준으로 생성하는 utils 만들기
+            string tagBlock = "s:" + sourceId + ",d:" + destinationId;
+            msg += backslash + tagBlock + GetChecksum(tagBlock);
+
+            // \$SMRRT,Q,,,,,*1B
+            // 요청 nmea sentence 입력
+            var sentence = "SMRRT,Q,,,,,";
+            msg += backslash + "$" + sentence + GetChecksum(sentence) + postFix;
+
+            return msg;
+        }
+
+        public byte[] CreateReqECDISDataSentence()
+        {
+            string msg = MakeUdPbC450Message();
+            return Encoding.ASCII.GetBytes(msg);
         }
         private void SaveRtzXmlToFile(string xml)
         {
@@ -365,122 +210,6 @@ namespace ECDISnmeadatareceiver
             //listBox1.TopIndex = listBox1.Items.Count - 1;
         }
 
-        #endregion
-
-        #region Nmea Result Class
-        public class NmeaSentence
-        {
-            // $/!
-            // *
-            // ,
-            public string Header { get; set; }
-            public string[] Fields { get; set; }
-            public byte? Checksum { get; set; }
-            public string FullSentence { get; set; }
-            public bool IsValid { get; set; }
-        }
-
-        public NmeaSentence ParseNmeaSentence(string sentence)
-        {
-            var result = new NmeaSentence();
-
-            try
-            {
-                result.IsValid = false;
-
-                // 0. 예외처리
-                // 값이 없는 경우
-                if (string.IsNullOrWhiteSpace(sentence))
-                    return result;
-
-                // $ 또는 ! 로 시작하는 위치부터 자르기 (커스텀 prefix 무시)
-                int startIndex = sentence.IndexOf('$');
-                if (startIndex == -1) startIndex = sentence.IndexOf('!');
-                if (startIndex == -1) return result;
-
-                sentence = sentence.Substring(startIndex);
-
-                // 체크섬 구분자 *이 없는 경우
-                if (!sentence.Contains("*"))
-                    return result;
-
-                Invoke(new Action(() =>
-                {
-                    AddLog($"Sentence : " + sentence);
-                }));
-
-                // 1. $ 제거
-                if (sentence.StartsWith("$") || sentence.StartsWith("!"))
-                    sentence = sentence.Substring(1);
-
-                // 2. 체크섬 분리
-                string[] parts = sentence.Split('*');
-                if (parts.Length != 2)
-                    return result;
-
-                string dataPart = parts[0];
-                string checksumStr = parts[1].Trim();
-
-                // 3. 체크섬 파싱 (hex → byte)
-                if (!byte.TryParse(checksumStr, System.Globalization.NumberStyles.HexNumber, null, out byte actualChecksum))
-                    return result;
-
-                // 4. 체크섬 계산
-                string calcChecksum = CalChecksum(dataPart);
-
-                if (Convert.ToByte(calcChecksum) != actualChecksum)
-                {
-                    Invoke(new Action(() =>
-                    {
-                        AddLog($"체크섬 불일치");
-                    }));
-                    return result; // 체크섬 불일치
-                }
-
-                Invoke(new Action(() =>
-                {
-                    AddLog($"체크섬 일치");
-                }));
-
-                // 5. 필드 파싱 (',' 기준)
-                string[] fields = dataPart.Split(',');
-
-                result.IsValid = true;
-                result.Fields = fields;
-                result.Checksum = actualChecksum;
-
-                return result;
-            }
-            catch
-            {
-                return result; // 모든 예외에 대해 실패 반환
-            }
-        }
-        #endregion
-
-        #region Nmea Sentence Format Loader Class
-        public class NmeaSentenceField
-        {
-            public int no { get; set; }
-            public string field { get; set; }
-        }
-
-        // 한번만 로딩해서 데이터 매핑 클래스에 포멧을 저장해두는 방식
-        public class NmeaSentenceFormatLoader
-        {
-            public Dictionary<string, List<NmeaSentenceField>> Load(string jsonFilePath = "nmea_sentence_format.json")
-            {
-                string jsonString = File.ReadAllText(jsonFilePath);
-                var sentenceMap = JsonSerializer.Deserialize<Dictionary<string, List<NmeaSentenceField>>>(jsonString);
-
-                if (sentenceMap == null)
-                {
-                    sentenceMap = new Dictionary<string, List<NmeaSentenceField>>();
-                }
-
-                return sentenceMap;
-            }
-        }
         #endregion
 
         #region Not In Use
