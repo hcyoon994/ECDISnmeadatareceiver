@@ -11,13 +11,13 @@ using System.Windows.Forms;
 
 namespace ECDISnmeadatareceiver
 {
-    public partial class Form1 : Form
+    public partial class Parser : Form
     {
         UdpClient udp60002;
         UdpClient udp60015;
         UdpClient udp60025;
 
-        public Form1()
+        public Parser()
         {
             InitializeComponent();
         }
@@ -34,7 +34,7 @@ namespace ECDISnmeadatareceiver
         {
             Create60015UdpClient();
             Create60025UdpClient();
-            //Create60002UdpClient();
+            Create60002UdpClient();
         }
 
         // 60025 멀티캐스트 그룹 등록
