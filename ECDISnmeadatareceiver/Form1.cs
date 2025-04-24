@@ -16,6 +16,10 @@ namespace ECDISnmeadatareceiver
 {
     public partial class Form1 : Form
     {
+        UdpClient udp60002;
+        UdpClient udp60015;
+        UdpClient udp60025;
+
         public Form1()
         {
             InitializeComponent();
@@ -23,144 +27,149 @@ namespace ECDISnmeadatareceiver
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // 멀티캐스트 통신 생성
-            UdpClient udpClient1 = CreateMulticastUdpClient(60015);
-            UdpClient udpClient2 = CreateMulticastUdpClient(60015);
-
-            // 60015, 60025 멀티캐스트 그룹 등록
-            JoinMulticastGroup(udpClient1, "239.192.0.15");
-            JoinMulticastGroup(udpClient2, "239.192.0.25");
-
-            // 60015 통신으로 패킷 요청
-            // interval에 따라 반복 요청하도록 수정 필요
-            SendMulticastUdp("239.192.0.15", 60015, CreateReqECDISDataSentence());
-
-            // 60025 통신으로 패킷 데이터 수신
-            StartReceiveLoop(udpClient2, 60025);
-
-            // 60015 통신으로 통신 완료 신호 수신
-            StartReceiveLoop(udpClient1, 60015);
-
-
-
             //LoadUdpMulticastClient(60025, "239.192.0.25"); // ECDIS P450 - Simple binary
             //LoadUdpMulticastClient(60015, "239.192.0.15"); // ECDIS P450 - NMEA
             //LoadUdpUnicastClient(60000, "127.0.0.1"); // Unicast 방식으로는 ECDIS 데이터를 받아올 수 없음
         }
 
+        // 60015 멀티캐스트 그룹 등록
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Create60015UdpClient();
+            Create60025UdpClient();
+            //Create60002UdpClient();
+        }
+
+        // 60025 멀티캐스트 그룹 등록
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // 60015 통신으로 패킷 요청
+        private void button3_Click(object sender, EventArgs e)
+        {
+            // 예시: 요청 메시지 정의
+            byte[] requestData = CreateReqECDISDataSentence();
+
+            SendMulticastUdpFrom60015("239.192.0.15", 60015, requestData);
+            AddLog("[Send] 60015로 요청 메시지 전송 완료");
+        }
+
         #region MulticastUdpClient
-        // 멀티캐스트 통신 생성
-        public UdpClient CreateMulticastUdpClient(int port)
+        public void Create60015UdpClient()
         {
-            var udp = new UdpClient();
-            udp.ExclusiveAddressUse = false;
-            udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            udp.Client.Bind(new IPEndPoint(IPAddress.Any, port));
-            AddLog($"[Create] UDP Client 포트 {port} 생성 및 바인딩 완료");
-
-            return udp;
-        }
-
-        // 멀티캐스트 그룹 등록
-        public void JoinMulticastGroup(UdpClient udp, string multicastIP)
-        {
-            try
+            if (udp60015 == null)
             {
-                IPAddress ipAddr = IPAddress.Parse(multicastIP);
-                udp.JoinMulticastGroup(ipAddr);
-                AddLog($"[Join] Multicast Group {multicastIP} 가입 완료");
+                udp60015 = new UdpClient();
+                udp60015.ExclusiveAddressUse = false;
+                udp60015.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                udp60015.Client.Bind(new IPEndPoint(IPAddress.Any, 60015));
+                udp60015.JoinMulticastGroup(IPAddress.Parse("239.192.0.15"));
+
+                StartReceiveLoop(udp60015, 60015);
+                AddLog("[60015] 멀티캐스트 그룹 가입 완료");
             }
-            catch (Exception ex)
+            else
             {
-                AddLog($"[Error] 그룹 가입 실패: {ex.Message}");
+                AddLog("[60015] 이미 멀티캐스트 그룹에 가입되어 있음");
             }
         }
 
-        // 멀티캐스트 그룹 탈퇴
-        public void DropMulticastGroup(UdpClient udp, string multicastIP)
+        public void Create60025UdpClient()
         {
-            try
+            if (udp60025 == null)
             {
-                IPAddress ipAddr = IPAddress.Parse(multicastIP);
-                udp.DropMulticastGroup(ipAddr);
-                AddLog($"[Join] Multicast Group {multicastIP} 탈퇴 완료");
+                udp60025 = new UdpClient();
+                udp60025.ExclusiveAddressUse = false;
+                udp60025.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                udp60025.Client.Bind(new IPEndPoint(IPAddress.Any, 60025));
+                udp60025.JoinMulticastGroup(IPAddress.Parse("239.192.0.25"));
+
+                StartReceiveLoop(udp60025, 60025);
+                AddLog("[60025] 멀티캐스트 그룹 가입 완료");
             }
-            catch (Exception ex)
+            else
             {
-                AddLog($"[Error] 그룹 탈퇴 실패: {ex.Message}");
+                AddLog("[60025] 이미 멀티캐스트 그룹에 가입되어 있음");
             }
         }
 
-        // 멀티캐스트 통신 정지
-        public void StopMulticastUdpClent(UdpClient udp)
+        public void Create60002UdpClient()
         {
-            if (udp != null)
+            if (udp60002 == null)
             {
-                udp.Close();
-                udp.Dispose();
-                AddLog("[Close] UdpClient 정지 및 리소스 해제 완료");
+                udp60002 = new UdpClient();
+                udp60002.ExclusiveAddressUse = false;
+                udp60002.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                udp60002.Client.Bind(new IPEndPoint(IPAddress.Any, 60002));
+                udp60002.JoinMulticastGroup(IPAddress.Parse("239.192.0.2"));
+
+                StartReceiveLoop(udp60002, 60002);
+                AddLog("[60002] 멀티캐스트 그룹 가입 완료");
+            }
+            else
+            {
+                AddLog("[60002] 이미 멀티캐스트 그룹에 가입되어 있음");
             }
         }
 
-        // 멀티캐스트 통신 송신
-        public void SendMulticastUdp(string multicastIP, int port, string str)
+        void StartReceiveLoop(UdpClient client, int portNo)
         {
-            byte[] data = Encoding.ASCII.GetBytes(str);
-            try
+            Task.Run(async () =>
             {
-                SendMulticastUdp(multicastIP, port, data);
-            }
-            catch(Exception ex)
-            {
-                AddLog($"[Error] 송신 실패: {ex.Message}");
-                throw ex;
-            }
-        }
-
-        public void SendMulticastUdp(string multicastIP, int port, byte[] data)
-        {
-            try
-            {
-                using (UdpClient sender = new UdpClient())
-                {
-                    IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(multicastIP), port);
-                    sender.Send(data, data.Length, remoteEP);
-                    AddLog($"[Send] {multicastIP}:{port} 송신 완료 ({data.Length} bytes)");
-                }
-            }
-            catch (Exception ex)
-            {
-                AddLog($"[Error] 송신 실패: {ex.Message}");
-                throw ex;
-            }
-        }
-
-        // 멀티캐스트 통신 수신
-        void StartReceiveLoop(UdpClient udp, int port)
-        {
-            Task.Run(() =>
-            {
-                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, port);
                 while (true)
                 {
                     try
                     {
-                        byte[] receivedBytes = udp.Receive(ref remoteEP);
+                        var result = await client.ReceiveAsync();
+                        string msg = Encoding.ASCII.GetString(result.Buffer);
+                        AddLog($"[Receive:{portNo}] {msg}");
 
-                        if (port == 60015)
-                            ProcessNmea(receivedBytes);
-                        else if (port == 60025)
-                            ProcessRtz(receivedBytes);
+                        string header = Encoding.ASCII.GetString(result.Buffer.Take(5).ToArray());
+
+                        if (header == "RaUdP")
+                            ProcessRtz(result.Buffer);
+                        else if (header == "UdPbC")
+                            ProcessNmea(result.Buffer);
                     }
                     catch (Exception ex)
                     {
-                        Invoke(new Action(() =>
-                        {
-                            AddLog($"[RX Error] {port}: {ex.Message}");
-                        }));
+                        AddLog($"[Error:{portNo}] {ex.Message}");
                     }
                 }
             });
+
+            Task.Delay(5000);
+        }
+
+        // 멀티캐스트 통신 송신
+        public void SendMulticastUdpFrom60015(string multicastIP, int port, string str)
+        {
+            byte[] data = Encoding.ASCII.GetBytes(str);
+            SendMulticastUdpFrom60015(multicastIP, port, data);
+        }
+
+        public void SendMulticastUdpFrom60015(string multicastIP, int port, byte[] data)
+        {
+            try
+            {
+                if (udp60015 == null)
+                {
+                    AddLog("[Error] udp60015가 초기화되지 않았습니다.");
+                    return;
+                }
+
+                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(multicastIP), port);
+                udp60015.Ttl = 16;
+                udp60015.Send(data, data.Length, remoteEP);
+                AddLog($"[Send] {multicastIP}:{port} 송신 완료 ({data.Length} bytes)");
+            }
+            catch (Exception ex)
+            {
+                AddLog($"[Error] 송신 실패: {ex.Message}");
+                throw;
+            }
         }
 
         // NMEA Sentence 처리
@@ -186,15 +195,15 @@ namespace ECDISnmeadatareceiver
 
         public void ProcessRtz(byte[] data)
         {
-            string header = Encoding.ASCII.GetString(data.Take(6).ToArray());
+            string header = Encoding.ASCII.GetString(data.Take(5).ToArray());
             if (header != "RaUdP") return;
 
-            string xml = Encoding.UTF8.GetString(data.Skip(6).ToArray());
+            string xml = Encoding.UTF8.GetString(data.Skip(5).ToArray());
             SaveRtzXmlToFile(xml);
 
             Invoke(new Action(() =>
             {
-                AddLog($"[RX] RTZ XML 수신 및 저장 완료");
+                AddLog($"[RX] RTZ XML 수신 및 저장 완료" + xml.Trim());
             }));
         }
         #endregion
@@ -208,21 +217,23 @@ namespace ECDISnmeadatareceiver
             string backslash = "\\";
             string sourceId = "SM0001";
             string destinationId = "EI0001";
+            string postFix = "\r\n";
 
+            // ex : UdPbC \s:SM0001,d:EI0001*29\$SMRRT,Q,,,,,*1B<CR><LF>
             // UdPbC
             // Datagram Header
-            msg += "UdPbC";
+            msg += "UdPbC" + (char)0;
 
-            // UdPbC\s:SM0001,d:EI0001*29
+            // UdPbC \s:SM0001,d:EI0001*29
             // TAG param = Source & Destination Identifier 
             // 나중에 IEC61162-450 기준으로 생성하는 utils 만들기
-            string tagBlock = backslash + "s:" + sourceId + ",d:" + destinationId;
-            msg += tagBlock + GetChecksum(tagBlock);
+            string tagBlock = "s:" + sourceId + ",d:" + destinationId;
+            msg += backslash + tagBlock + GetChecksum(tagBlock);
 
             // \$SMRRT,Q,,,,,*1B
             // 요청 nmea sentence 입력
-            var sentence = "$SMRRT,Q,,,,,";
-            msg += sentence + GetChecksum(sentence);
+            var sentence = "SMRRT,Q,,,,,";
+            msg += backslash + "$" + sentence + GetChecksum(sentence) + postFix;
 
             return msg;
         }
@@ -232,6 +243,131 @@ namespace ECDISnmeadatareceiver
             string msg = MakeUdPbC450Message();
             return Encoding.ASCII.GetBytes(msg);
         }
+        #endregion
+
+        #region utils
+        public string GetChecksum(string str)
+        {
+            return "*" + CalChecksum(str);
+        }
+
+        public string CalChecksum(string str)
+        {
+            int checksum = str.First();
+            // Loop through all chars to get a checksum
+            for (int i = 1; i < str.Length; i++)
+            {
+                // No. XOR the checksum with this character's value
+                checksum ^= Convert.ToByte(str[i]);
+            }
+            // Return the checksum formatted as a two-character hexadecimal
+            return checksum.ToString("X2");
+        }
+
+        public void MappingData(NmeaSentence nmeaData)
+        {
+            var loader = new NmeaSentenceFormatLoader();
+            var sentenceMap = loader.Load();
+
+            if (sentenceMap == null)
+                AddLog($"Cannot Load 'nmea_sentence_format.json' file");
+            else
+                AddLog($"NmeaSentence Format Map Load");
+
+            if (nmeaData.IsValid)
+            {
+                string talkerId = Convert.ToString(nmeaData.Fields[0]).Substring(0, 2);
+                string sentenceId = Convert.ToString(nmeaData.Fields[0]).Substring(2, 3);
+                Invoke(new Action(() =>
+                {
+                    AddLog($"TalkerID : {talkerId}");
+                    AddLog($"SentenceID : {sentenceId}");
+                }));
+
+                // field와 값을 매칭
+                if (sentenceMap.TryGetValue(sentenceId, out List<NmeaSentenceField> fields))
+                {
+                    for (int i = 0; i < fields.Count && i < nmeaData.Fields.Length; i++)
+                    {
+                        Invoke(new Action(() =>
+                        {
+                            AddLog($"Data Field #{i + 1} - {fields[i].field} : {Convert.ToString(nmeaData.Fields[i + 1])}");
+                            //listBox1.SelectedIndex = listBox1.Items.Count - 1;
+                        }));
+                    }
+                }
+            }
+            else
+            {
+                Invoke(new Action(() =>
+                {
+                    AddLog($"데이터 파싱 오류");
+                }));
+            }
+        }
+        private void SaveRtzXmlToFile(string xml)
+        {
+            try
+            {
+                string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RTZ");
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+                string filePath = Path.Combine(dir, $"RTZ_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
+                File.WriteAllText(filePath, xml);
+
+                AddLog($"RTZ 파일 저장 완료: {filePath}");
+            }
+            catch (Exception ex)
+            {
+                AddLog($"RTZ 파일 저장 오류: {ex.Message}");
+            }
+        }
+        public void AddLog(string message)
+        {
+            if (listBox1.InvokeRequired)
+            {
+                listBox1.Invoke(new Action(() => AddLog(message)));
+                return;
+            }
+
+            string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string logLine = $"[{timestamp}] {message}";
+
+            // 리스트박스에 로그 추가
+            listBox1.Items.Add(logLine);
+
+            // 항목 개수가 50000 초과 시, 초과된 만큼 앞에서부터 제거
+            int maxLines = 50000;
+            while (listBox1.Items.Count > maxLines)
+            {
+                listBox1.Items.RemoveAt(0);
+            }
+
+
+            // 로그 파일 저장
+            try
+            {
+                string logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+                if (!Directory.Exists(logDir))
+                {
+                    Directory.CreateDirectory(logDir);
+                }
+
+                string logFileName = DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+                string logFilePath = Path.Combine(logDir, logFileName);
+
+                File.AppendAllText(logFilePath, logLine + Environment.NewLine);
+            }
+            catch (Exception ex)
+            {
+                // 로그 저장 실패는 UI에만 남김
+                listBox1.Items.Add($"[LogError] {ex.Message}");
+            }
+
+            // 항상 마지막 항목이 선택되게 (자동 스크롤)
+            //listBox1.TopIndex = listBox1.Items.Count - 1;
+        }
+
         #endregion
 
         #region Nmea Result Class
@@ -257,28 +393,32 @@ namespace ECDISnmeadatareceiver
 
                 // 0. 예외처리
                 // 값이 없는 경우
-                if (string.IsNullOrWhiteSpace(sentence)) 
+                if (string.IsNullOrWhiteSpace(sentence))
                     return result;
 
-                // 센텐스가 $/!로 시작되지 않는 경우
-                if (!(sentence.StartsWith("$") || sentence.StartsWith("!"))) 
-                    return result;
+                // $ 또는 ! 로 시작하는 위치부터 자르기 (커스텀 prefix 무시)
+                int startIndex = sentence.IndexOf('$');
+                if (startIndex == -1) startIndex = sentence.IndexOf('!');
+                if (startIndex == -1) return result;
+
+                sentence = sentence.Substring(startIndex);
 
                 // 체크섬 구분자 *이 없는 경우
-                if (!sentence.Contains("*")) 
+                if (!sentence.Contains("*"))
                     return result;
 
-                // 센텐스 Max Length 보다 긴 경우
-                //if (sentence.Length > 82) 
-                //    return result;
+                Invoke(new Action(() =>
+                {
+                    AddLog($"Sentence : " + sentence);
+                }));
 
                 // 1. $ 제거
-                if (sentence.StartsWith("$") || sentence.StartsWith("!")) 
+                if (sentence.StartsWith("$") || sentence.StartsWith("!"))
                     sentence = sentence.Substring(1);
 
                 // 2. 체크섬 분리
                 string[] parts = sentence.Split('*');
-                if (parts.Length != 2) 
+                if (parts.Length != 2)
                     return result;
 
                 string dataPart = parts[0];
@@ -289,9 +429,9 @@ namespace ECDISnmeadatareceiver
                     return result;
 
                 // 4. 체크섬 계산
-                byte calcChecksum = CalChecksum(dataPart);
+                string calcChecksum = CalChecksum(dataPart);
 
-                if (calcChecksum != actualChecksum)
+                if (Convert.ToByte(calcChecksum) != actualChecksum)
                 {
                     Invoke(new Action(() =>
                     {
@@ -343,80 +483,6 @@ namespace ECDISnmeadatareceiver
 
                 return sentenceMap;
             }
-        }
-        #endregion
-
-        #region utils
-        public string GetChecksum(string str)
-        {
-            return "*" + CalChecksum(str);
-        }
-
-        public byte CalChecksum(string str)
-        {
-            byte calcChecksum = 0;
-            foreach (char c in str)
-            {
-                calcChecksum ^= (byte)c;
-            }
-
-            return calcChecksum;
-        }
-
-        public void AddLog(string message)
-        {
-            if (listBox1.InvokeRequired)
-            {
-                listBox1.Invoke(new Action(() => AddLog(message)));
-                return;
-            }
-
-            string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            string logLine = $"[{timestamp}] {message}";
-
-            // 리스트박스에 로그 추가
-            listBox1.Items.Add(logLine);
-
-            // 항목 개수가 10000 초과 시, 초과된 만큼 앞에서부터 제거
-            int maxLines = 10000;
-            while (listBox1.Items.Count > maxLines)
-            {
-                listBox1.Items.RemoveAt(0);
-            }
-
-
-            // 로그 파일 저장
-            try
-            {
-                string logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
-                if (!Directory.Exists(logDir))
-                {
-                    Directory.CreateDirectory(logDir);
-                }
-
-                string logFileName = DateTime.Now.ToString("yyyy-MM-dd") + ".log";
-                string logFilePath = Path.Combine(logDir, logFileName);
-
-                File.AppendAllText(logFilePath, logLine + Environment.NewLine);
-            }
-            catch (Exception ex)
-            {
-                // 로그 저장 실패는 UI에만 남김
-                listBox1.Items.Add($"[LogError] {ex.Message}");
-            }
-
-            // 항상 마지막 항목이 선택되게 (자동 스크롤)
-            //listBox1.TopIndex = listBox1.Items.Count - 1;
-        }
-
-        void SaveRtzXmlToFile(string xml)
-        {
-            string rtzDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "rtz");
-            if (!Directory.Exists(rtzDir))
-                Directory.CreateDirectory(rtzDir);
-
-            string filePath = Path.Combine(rtzDir, $"RTZ_{DateTime.Now:yyyyMMdd_HHmmss}.xml");
-            File.WriteAllText(filePath, xml);
         }
         #endregion
 
@@ -633,5 +699,6 @@ namespace ECDISnmeadatareceiver
             });
         }
         #endregion
+
     }
 }
