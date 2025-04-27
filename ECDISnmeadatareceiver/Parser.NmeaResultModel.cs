@@ -60,17 +60,18 @@ namespace ECDISnmeadatareceiver
                 if (parts.Length != 2)
                     return result;
 
-                string dataPart = parts[0];
+                // **(중요) \r, \n 제거**
+                string dataPart = parts[0].Trim();
                 string checksumStr = parts[1].Trim();
 
-                // 3. 체크섬 파싱 (hex → byte)
+                // 3. 체크섬 파싱
                 if (!byte.TryParse(checksumStr, System.Globalization.NumberStyles.HexNumber, null, out byte actualChecksum))
                     return result;
 
                 // 4. 체크섬 계산
-                string calcChecksum = CalChecksum(dataPart);
+                string calcChecksumStr = CalChecksum(dataPart);
 
-                if (Convert.ToByte(calcChecksum) != actualChecksum)
+                if (Convert.ToByte(calcChecksumStr, 16) != actualChecksum)
                 {
                     Invoke(new Action(() =>
                     {
@@ -98,6 +99,52 @@ namespace ECDISnmeadatareceiver
                 return result; // 모든 예외에 대해 실패 반환
             }
         }
+
+        public void NmeaMapping(string receivedData)
+        {
+            var loader = new NmeaSentenceFormatLoader();
+            var sentenceMap = loader.Load();
+
+            if (sentenceMap == null)
+                AddLog("Cannot Load 'nmea_sentence_format.json' file");
+            else
+                AddLog("NmeaSentence Format Map Load");
+
+            try
+            {
+                NmeaSentence nmeaData = ParseNmeaSentence(receivedData);
+
+                if (nmeaData.IsValid)
+                {
+                    string talkerId = Convert.ToString(nmeaData.Fields[0]).Substring(0, 2);
+                    string sentenceId = Convert.ToString(nmeaData.Fields[0]).Substring(2, 3);
+                    AddLog($"TalkerID : {talkerId}");
+                    AddLog($"SentenceID : {sentenceId}");
+
+                    if (sentenceMap.TryGetValue(sentenceId, out List<NmeaSentenceField> fields))
+                    {
+                        for (int i = 0; i < fields.Count && i < nmeaData.Fields.Length; i++)
+                        {
+                            AddLog($"Data Field #{i + 1} - {fields[i].field} : {Convert.ToString(nmeaData.Fields[i + 1])}");
+                        }
+                    }
+                }
+                else
+                {
+                    AddLog("데이터 파싱 오류");
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLog($"오류: {ex.Message}");
+                AddLog(ex.StackTrace);
+            }
+            finally
+            {
+                AddLog("-----Multicast Finish-----");
+            }
+        }
+
         #endregion
 
         #region Nmea Sentence Format Loader Class

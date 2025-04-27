@@ -127,40 +127,6 @@ namespace ECDISnmeadatareceiver
             }
         }
 
-        // NMEA Sentence 처리
-        public void ProcessNmea(byte[] data)
-        {
-            string header = Encoding.ASCII.GetString(data.Take(5).ToArray());
-            if (header != "UdPbC") return;
-
-            string sentence = Encoding.ASCII.GetString(data.Skip(5).ToArray());
-
-            // 기존 NMEA 처리 로직 재사용
-            NmeaSentence result = ParseNmeaSentence(sentence);
-        }
-
-        // 450 Message 처리
-        public void Process450Message(byte[] data)
-        {
-            string header = Encoding.ASCII.GetString(data.Take(6).ToArray());
-            if (header == "RaUdP")
-                ProcessRtz(data);
-
-        }
-
-        public void ProcessRtz(byte[] data)
-        {
-            string header = Encoding.ASCII.GetString(data.Take(5).ToArray());
-            if (header != "RaUdP") return;
-
-            string xml = Encoding.UTF8.GetString(data.Skip(5).ToArray());
-            SaveRtzXmlToFile(xml);
-
-            Invoke(new Action(() =>
-            {
-                AddLog($"[RX] RTZ XML 수신 및 저장 완료" + xml.Trim());
-            }));
-        }
         #endregion
 
     }

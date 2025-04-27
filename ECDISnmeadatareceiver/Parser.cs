@@ -71,48 +71,6 @@ namespace ECDISnmeadatareceiver
             return checksum.ToString("X2");
         }
 
-        public void MappingData(NmeaSentence nmeaData)
-        {
-            var loader = new NmeaSentenceFormatLoader();
-            var sentenceMap = loader.Load();
-
-            if (sentenceMap == null)
-                AddLog($"Cannot Load 'nmea_sentence_format.json' file");
-            else
-                AddLog($"NmeaSentence Format Map Load");
-
-            if (nmeaData.IsValid)
-            {
-                string talkerId = Convert.ToString(nmeaData.Fields[0]).Substring(0, 2);
-                string sentenceId = Convert.ToString(nmeaData.Fields[0]).Substring(2, 3);
-                Invoke(new Action(() =>
-                {
-                    AddLog($"TalkerID : {talkerId}");
-                    AddLog($"SentenceID : {sentenceId}");
-                }));
-
-                // field와 값을 매칭
-                if (sentenceMap.TryGetValue(sentenceId, out List<NmeaSentenceField> fields))
-                {
-                    for (int i = 0; i < fields.Count && i < nmeaData.Fields.Length; i++)
-                    {
-                        Invoke(new Action(() =>
-                        {
-                            AddLog($"Data Field #{i + 1} - {fields[i].field} : {Convert.ToString(nmeaData.Fields[i + 1])}");
-                            //listBox1.SelectedIndex = listBox1.Items.Count - 1;
-                        }));
-                    }
-                }
-            }
-            else
-            {
-                Invoke(new Action(() =>
-                {
-                    AddLog($"데이터 파싱 오류");
-                }));
-            }
-        }
-
         public string MakeUdPbC450Message()
         {
             // UdPbC\s:SM0001,d:EI0001*29\$SMRRT,Q,,,,,*1B
@@ -147,23 +105,7 @@ namespace ECDISnmeadatareceiver
             string msg = MakeUdPbC450Message();
             return Encoding.ASCII.GetBytes(msg);
         }
-        private void SaveRtzXmlToFile(string xml)
-        {
-            try
-            {
-                string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RTZ");
-                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
-                string filePath = Path.Combine(dir, $"RTZ_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
-                File.WriteAllText(filePath, xml);
-
-                AddLog($"RTZ 파일 저장 완료: {filePath}");
-            }
-            catch (Exception ex)
-            {
-                AddLog($"RTZ 파일 저장 오류: {ex.Message}");
-            }
-        }
         public void AddLog(string message)
         {
             if (listBox1.InvokeRequired)

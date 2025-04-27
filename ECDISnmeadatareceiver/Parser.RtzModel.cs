@@ -1,0 +1,136 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Timers;
+using System.Windows.Forms;
+
+namespace ECDISnmeadatareceiver
+{
+    public partial class Parser : Form
+    {
+        class RtzAssembly
+        {
+            public List<byte[]> RtzChunks { get; set; } = new List<byte[]>();
+            public string Bid { get; set; } = null;
+            public DateTime LastUpdated { get; set; } = DateTime.Now;
+
+            public bool IsReadyToSave => RtzChunks.Count > 0 && !string.IsNullOrEmpty(Bid);
+        }
+
+        RtzAssembly currentAssembly = null;
+        System.Timers.Timer rtzTimeoutTimer = null;
+        readonly TimeSpan AssemblyTimeout = TimeSpan.FromSeconds(3);
+        string saveFolder = Path.Combine(Application.StartupPath, "SavedRTZ");
+
+        // RTZ 수신
+        void ProcessRtz(byte[] data)
+        {
+            if (data.Length <= 46)
+            {
+                AddLog("[RTZ] 데이터가 너무 짧음");
+                return;
+            }
+
+            byte[] xmlData = data.Skip(46).ToArray();
+
+            if (currentAssembly == null)
+                currentAssembly = new RtzAssembly();
+
+            currentAssembly.RtzChunks.Add(xmlData);
+            currentAssembly.LastUpdated = DateTime.Now;
+
+            StartOrResetTimeoutTimer();
+        }
+
+        // NMEA 수신
+        void ProcessNmea(byte[] data)
+        {
+            string message = Encoding.ASCII.GetString(data);
+
+            if (!message.Contains("$EIRRT"))
+            {
+                NmeaMapping(message);
+                return;
+            }
+
+            string cleaned = message.Replace("*", ",");
+
+            var match = Regex.Match(cleaned, @"bid(\d+)", RegexOptions.IgnoreCase);
+            if (!match.Success)
+            {
+                AddLog("[NMEA] bid 찾기 실패");
+                return;
+            }
+
+            string bid = match.Groups[1].Value;
+            AddLog($"[NMEA] bid 추출 완료: {bid}");
+
+            if (currentAssembly == null)
+                currentAssembly = new RtzAssembly();
+
+            currentAssembly.Bid = bid;
+        }
+
+        void StartOrResetTimeoutTimer()
+        {
+            if (rtzTimeoutTimer == null)
+            {
+                rtzTimeoutTimer = new System.Timers.Timer(AssemblyTimeout.TotalMilliseconds);
+                rtzTimeoutTimer.Elapsed += OnTimeoutElapsed;
+                rtzTimeoutTimer.AutoReset = false;
+            }
+
+            rtzTimeoutTimer.Stop();
+            rtzTimeoutTimer.Start();
+        }
+
+        void OnTimeoutElapsed(object sender, ElapsedEventArgs e)
+        {
+            SaveCurrentAssembly();
+        }
+
+        void SaveCurrentAssembly()
+        {
+            if (currentAssembly == null || currentAssembly.RtzChunks.Count == 0)
+            {
+                AddLog("[Save] 저장할 데이터 없음");
+                return;
+            }
+
+            Directory.CreateDirectory(saveFolder);
+
+            byte[] merged = MergeChunks(currentAssembly.RtzChunks);
+
+            string bidPart = string.IsNullOrEmpty(currentAssembly.Bid) ? "NO_BID" : currentAssembly.Bid;
+            string timestamp = currentAssembly.LastUpdated.ToString("yyyyMMdd_HHmmss");
+            string filename = $"{timestamp}_{bidPart}.txt";
+            string fullPath = Path.Combine(saveFolder, filename);
+
+            try
+            {
+                File.WriteAllBytes(fullPath, merged);
+                AddLog($"[Save] RTZ 저장 완료: {fullPath} ({merged.Length} bytes)");
+            }
+            catch (Exception ex)
+            {
+                AddLog($"[Error] 저장 실패: {ex.Message}");
+            }
+
+            currentAssembly = null;
+            rtzTimeoutTimer?.Stop();
+        }
+
+        byte[] MergeChunks(List<byte[]> chunks)
+        {
+            using (var ms = new MemoryStream())
+            {
+                foreach (var chunk in chunks)
+                    ms.Write(chunk, 0, chunk.Length);
+                return ms.ToArray();
+            }
+        }
+    }
+}

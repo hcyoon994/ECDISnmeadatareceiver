@@ -77,19 +77,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Parser.NmeaResultClass.cs">
+    <Compile Include="Parser.NmeaResultModel.cs">
       <SubType>Form</SubType>
-		<DependentUpon>Parser.cs</DependentUpon>
+      <DependentUpon>Parser.cs</DependentUpon>
     </Compile>
     <Compile Include="Parser.MulticastUdpClient.cs">
       <SubType>Form</SubType>
-		<DependentUpon>Parser.cs</DependentUpon>
+      <DependentUpon>Parser.cs</DependentUpon>
     </Compile>
     <Compile Include="Parser.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Parser.Designer.cs">
       <DependentUpon>Parser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Parser.RtzModel.cs">
+      <DependentUpon>Parser.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

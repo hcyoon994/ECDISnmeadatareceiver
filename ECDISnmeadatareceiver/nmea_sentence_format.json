@@ -1,4 +1,64 @@
 {
+  "ALF": [
+    {
+      "no": 1,
+      "field": "Alarm ID"
+    },
+    {
+      "no": 2,
+      "field": "Alarm Condition (ON/OFF)"
+    }
+  ],
+  "BWC": [
+    {
+      "no": 1,
+      "field": "UTC Time"
+    },
+    {
+      "no": 2,
+      "field": "Latitude"
+    },
+    {
+      "no": 3,
+      "field": "Latitude Direction (N/S)"
+    },
+    {
+      "no": 4,
+      "field": "Longitude"
+    },
+    {
+      "no": 5,
+      "field": "Longitude Direction (E/W)"
+    },
+    {
+      "no": 6,
+      "field": "True Bearing (degrees)"
+    },
+    {
+      "no": 7,
+      "field": "T = True"
+    },
+    {
+      "no": 8,
+      "field": "Magnetic Bearing (degrees)"
+    },
+    {
+      "no": 9,
+      "field": "M = Magnetic"
+    },
+    {
+      "no": 10,
+      "field": "Distance to Waypoint (Nautical Miles)"
+    },
+    {
+      "no": 11,
+      "field": "N = Nautical Miles"
+    },
+    {
+      "no": 12,
+      "field": "Waypoint ID"
+    }
+  ],
   "DBT": [
     {
       "no": 1,
@@ -37,6 +97,40 @@
     {
       "no": 3,
       "field": "Maximum range scale in use"
+    }
+  ],
+  "DTM": [
+    {
+      "no": 1,
+      "field": "Datum Code"
+    },
+    {
+      "no": 2,
+      "field": "Subcode"
+    },
+    {
+      "no": 3,
+      "field": "Latitude Offset (minutes)"
+    },
+    {
+      "no": 4,
+      "field": "Latitude Direction (N/S)"
+    },
+    {
+      "no": 5,
+      "field": "Longitude Offset (minutes)"
+    },
+    {
+      "no": 6,
+      "field": "Longitude Direction (E/W)"
+    },
+    {
+      "no": 7,
+      "field": "Altitude Offset (meters)"
+    },
+    {
+      "no": 8,
+      "field": "Reference Datum"
     }
   ],
   "HDT": [
@@ -175,6 +269,28 @@
     {
       "no": 6,
       "field": "Status A = Data Valid, V = Data Invalid"
+    }
+  ],
+  "HBT": [
+    {
+      "no": 1,
+      "field": "Heading Target (True)"
+    },
+    {
+      "no": 2,
+      "field": "T = True"
+    },
+    {
+      "no": 3,
+      "field": "Heading Target (Magnetic)"
+    },
+    {
+      "no": 4,
+      "field": "M = Magnetic"
+    },
+    {
+      "no": 5,
+      "field": "Waypoint ID (optional)"
     }
   ],
   "OSD": [
