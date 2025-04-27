@@ -61,7 +61,7 @@ namespace ECDISnmeadatareceiver
         public string CalChecksum(string str)
         {
             int checksum = str.First();
-            // Loop through all chars to get a checksum
+
             for (int i = 1; i < str.Length; i++)
             {
                 // No. XOR the checksum with this character's value

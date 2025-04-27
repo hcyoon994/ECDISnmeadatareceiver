@@ -9,6 +9,190 @@
       "field": "Alarm Condition (ON/OFF)"
     }
   ],
+  "APB": [
+    {
+      "no": 1,
+      "field": "Status A/V - General warning or OK"
+    },
+    {
+      "no": 2,
+      "field": "Status A/V - Loran-C Cycle Lock warning or OK"
+    },
+    {
+      "no": 3,
+      "field": "Cross Track Error Magnitude"
+    },
+    {
+      "no": 4,
+      "field": "Direction to Steer (L/R)"
+    },
+    {
+      "no": 5,
+      "field": "Cross Track Units (Nautical miles)"
+    },
+    {
+      "no": 6,
+      "field": "Arrival Circle Entered (A/V)"
+    },
+    {
+      "no": 7,
+      "field": "Perpendicular Passed (A/V)"
+    },
+    {
+      "no": 8,
+      "field": "Bearing Origin to Destination (degrees)"
+    },
+    {
+      "no": 9,
+      "field": "Bearing Type (T/M)"
+    },
+    {
+      "no": 10,
+      "field": "Destination Waypoint ID"
+    },
+    {
+      "no": 11,
+      "field": "Bearing Present Position to Destination (degrees)"
+    },
+    {
+      "no": 12,
+      "field": "Bearing Type (T/M)"
+    },
+    {
+      "no": 13,
+      "field": "Heading-to-Steer to Destination (degrees)"
+    },
+    {
+      "no": 14,
+      "field": "Heading Type (T/M)"
+    }
+  ],
+  "BEC": [
+    {
+      "no": 1,
+      "field": "UTC Time"
+    },
+    {
+      "no": 2,
+      "field": "Waypoint Latitude"
+    },
+    {
+      "no": 3,
+      "field": "Latitude Direction (N/S)"
+    },
+    {
+      "no": 4,
+      "field": "Waypoint Longitude"
+    },
+    {
+      "no": 5,
+      "field": "Longitude Direction (E/W)"
+    },
+    {
+      "no": 6,
+      "field": "Bearing True"
+    },
+    {
+      "no": 7,
+      "field": "T = True"
+    },
+    {
+      "no": 8,
+      "field": "Bearing Magnetic"
+    },
+    {
+      "no": 9,
+      "field": "M = Magnetic"
+    },
+    {
+      "no": 10,
+      "field": "Distance to Waypoint (Nautical Miles)"
+    },
+    {
+      "no": 11,
+      "field": "N = Nautical Miles"
+    },
+    {
+      "no": 12,
+      "field": "Waypoint ID"
+    }
+  ],
+  "BER": [
+    {
+      "no": 1,
+      "field": "UTC Time"
+    },
+    {
+      "no": 2,
+      "field": "Waypoint Latitude"
+    },
+    {
+      "no": 3,
+      "field": "Latitude Direction (N/S)"
+    },
+    {
+      "no": 4,
+      "field": "Waypoint Longitude"
+    },
+    {
+      "no": 5,
+      "field": "Longitude Direction (E/W)"
+    },
+    {
+      "no": 6,
+      "field": "Bearing True"
+    },
+    {
+      "no": 7,
+      "field": "T = True"
+    },
+    {
+      "no": 8,
+      "field": "Bearing Magnetic"
+    },
+    {
+      "no": 9,
+      "field": "M = Magnetic"
+    },
+    {
+      "no": 10,
+      "field": "Distance to Waypoint (Nautical Miles)"
+    },
+    {
+      "no": 11,
+      "field": "N = Nautical Miles"
+    },
+    {
+      "no": 12,
+      "field": "Waypoint ID"
+    }
+  ],
+  "BOD": [
+    {
+      "no": 1,
+      "field": "Bearing Degrees True"
+    },
+    {
+      "no": 2,
+      "field": "T = True"
+    },
+    {
+      "no": 3,
+      "field": "Bearing Degrees Magnetic"
+    },
+    {
+      "no": 4,
+      "field": "M = Magnetic"
+    },
+    {
+      "no": 5,
+      "field": "TO Waypoint ID"
+    },
+    {
+      "no": 6,
+      "field": "FROM Waypoint ID"
+    }
+  ],
   "BWC": [
     {
       "no": 1,
@@ -41,6 +225,56 @@
     {
       "no": 8,
       "field": "Magnetic Bearing (degrees)"
+    },
+    {
+      "no": 9,
+      "field": "M = Magnetic"
+    },
+    {
+      "no": 10,
+      "field": "Distance to Waypoint (Nautical Miles)"
+    },
+    {
+      "no": 11,
+      "field": "N = Nautical Miles"
+    },
+    {
+      "no": 12,
+      "field": "Waypoint ID"
+    }
+  ],
+  "BWR": [
+    {
+      "no": 1,
+      "field": "UTC Time"
+    },
+    {
+      "no": 2,
+      "field": "Waypoint Latitude"
+    },
+    {
+      "no": 3,
+      "field": "Latitude Direction (N/S)"
+    },
+    {
+      "no": 4,
+      "field": "Waypoint Longitude"
+    },
+    {
+      "no": 5,
+      "field": "Longitude Direction (E/W)"
+    },
+    {
+      "no": 6,
+      "field": "Bearing True"
+    },
+    {
+      "no": 7,
+      "field": "T = True"
+    },
+    {
+      "no": 8,
+      "field": "Bearing Magnetic"
     },
     {
       "no": 9,
@@ -163,6 +397,24 @@
     {
       "no": 5,
       "field": "Magnetic Variation direction"
+    }
+  ],
+  "HTC": [
+    {
+      "no": 1,
+      "field": "Commanded Heading (True)"
+    },
+    {
+      "no": 2,
+      "field": "T = True"
+    },
+    {
+      "no": 3,
+      "field": "Commanded Heading (Magnetic)"
+    },
+    {
+      "no": 4,
+      "field": "M = Magnetic"
     }
   ],
   "MWV": [
@@ -329,6 +581,60 @@
     {
       "no": 9,
       "field": "Speed Units"
+    }
+  ],
+  "RMB": [
+    {
+      "no": 1,
+      "field": "Status A/V (Warning Flag)"
+    },
+    {
+      "no": 2,
+      "field": "Cross Track Error (nautical miles)"
+    },
+    {
+      "no": 3,
+      "field": "Direction to Steer (L/R)"
+    },
+    {
+      "no": 4,
+      "field": "TO Waypoint ID"
+    },
+    {
+      "no": 5,
+      "field": "FROM Waypoint ID"
+    },
+    {
+      "no": 6,
+      "field": "Destination Latitude"
+    },
+    {
+      "no": 7,
+      "field": "Latitude Direction (N/S)"
+    },
+    {
+      "no": 8,
+      "field": "Destination Longitude"
+    },
+    {
+      "no": 9,
+      "field": "Longitude Direction (E/W)"
+    },
+    {
+      "no": 10,
+      "field": "Range to Destination (Nautical Miles)"
+    },
+    {
+      "no": 11,
+      "field": "Bearing to Destination (degrees True)"
+    },
+    {
+      "no": 12,
+      "field": "Destination Closing Velocity (knots)"
+    },
+    {
+      "no": 13,
+      "field": "Arrival Status A/V"
     }
   ],
   "RMC": [
@@ -735,6 +1041,42 @@
     {
       "no": 5,
       "field": "Waypoint Identifier"
+    }
+  ],
+  "XTE": [
+    {
+      "no": 1,
+      "field": "Status (Loran-C Blink or SNR warning)"
+    },
+    {
+      "no": 2,
+      "field": "Status (Loran-C Cycle Lock warning)"
+    },
+    {
+      "no": 3,
+      "field": "Cross Track Error Magnitude"
+    },
+    {
+      "no": 4,
+      "field": "Direction to Steer (L/R)"
+    },
+    {
+      "no": 5,
+      "field": "Cross Track Units (Nautical miles)"
+    }
+  ],
+  "XTR": [
+    {
+      "no": 1,
+      "field": "Status (A = Data Valid, V = Data Invalid)"
+    },
+    {
+      "no": 2,
+      "field": "Cross Track Error Magnitude"
+    },
+    {
+      "no": 3,
+      "field": "Direction to Steer (L/R)"
     }
   ],
   "ZDA": [
