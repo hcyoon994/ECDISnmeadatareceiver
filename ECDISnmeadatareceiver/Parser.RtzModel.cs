@@ -13,7 +13,7 @@ namespace ECDISnmeadatareceiver
     public partial class Parser : Form
     {
         #region RTZ
-        class RtzAssembly
+        public class RtzAssembly
         {
             public List<byte[]> RtzChunks { get; set; } = new List<byte[]>();
             public string Bid { get; set; } = null;
@@ -24,11 +24,11 @@ namespace ECDISnmeadatareceiver
 
         RtzAssembly currentAssembly = null;
         System.Timers.Timer rtzTimeoutTimer = null;
-        readonly TimeSpan AssemblyTimeout = TimeSpan.FromSeconds(3);
+        readonly TimeSpan AssemblyTimeout = TimeSpan.FromSeconds(10); // 10초 내에 받아오는 RTZ 데이터를 추출함
         string saveFolder = Path.Combine(Application.StartupPath, "SavedRTZ");
 
         // RTZ 수신
-        void ProcessRtz(byte[] data)
+        public void ProcessRtz(byte[] data)
         {
             if (data.Length <= 46)
             {
@@ -48,7 +48,7 @@ namespace ECDISnmeadatareceiver
         }
 
         // NMEA 수신
-        void ProcessNmea(byte[] data)
+        public void ProcessNmea(byte[] data)
         {
             string message = Encoding.ASCII.GetString(data);
 
@@ -76,7 +76,7 @@ namespace ECDISnmeadatareceiver
             currentAssembly.Bid = bid;
         }
 
-        void StartOrResetTimeoutTimer()
+        public void StartOrResetTimeoutTimer()
         {
             if (rtzTimeoutTimer == null)
             {
@@ -89,12 +89,12 @@ namespace ECDISnmeadatareceiver
             rtzTimeoutTimer.Start();
         }
 
-        void OnTimeoutElapsed(object sender, ElapsedEventArgs e)
+        public void OnTimeoutElapsed(object sender, ElapsedEventArgs e)
         {
             SaveCurrentAssembly();
         }
 
-        void SaveCurrentAssembly()
+        public void SaveCurrentAssembly()
         {
             if (currentAssembly == null || currentAssembly.RtzChunks.Count == 0)
             {
@@ -132,7 +132,7 @@ namespace ECDISnmeadatareceiver
             rtzTimeoutTimer?.Stop();
         }
 
-        byte[] MergeChunks(List<byte[]> chunks)
+        public byte[] MergeChunks(List<byte[]> chunks)
         {
             using (var ms = new MemoryStream())
             {

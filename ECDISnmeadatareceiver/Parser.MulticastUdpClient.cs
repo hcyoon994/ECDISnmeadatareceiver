@@ -87,6 +87,8 @@ namespace ECDISnmeadatareceiver
                             ProcessRtz(result.Buffer);
                         else if (header == "UdPbC")
                             ProcessNmea(result.Buffer);
+                        else
+                            ProcessNmea(result.Buffer);
                     }
                     catch (Exception ex)
                     {
@@ -94,7 +96,6 @@ namespace ECDISnmeadatareceiver
                     }
                 }
             });
-
             Task.Delay(5000);
         }
 

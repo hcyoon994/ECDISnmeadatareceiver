@@ -31,9 +31,9 @@ namespace ECDISnmeadatareceiver
         // 60015 멀티캐스트 그룹 등록
         private void button1_Click(object sender, EventArgs e)
         {
-            Create60015UdpClient();
-            Create60025UdpClient();
-            Create60002UdpClient();
+            Create60002UdpClient(); // AIS
+            //Create60015UdpClient(); // route(RTZ)
+            //Create60025UdpClient(); // route(RTZ)
         }
 
         // 60025 멀티캐스트 그룹 등록

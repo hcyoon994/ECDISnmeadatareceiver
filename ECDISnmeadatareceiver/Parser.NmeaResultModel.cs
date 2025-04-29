@@ -170,6 +170,7 @@ namespace ECDISnmeadatareceiver
                 return sentenceMap;
             }
         }
+
         #endregion
 
     }
